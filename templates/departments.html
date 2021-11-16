@@ -12,49 +12,19 @@
 
 <div class="container">
     <ul class="list-group cProductsList">
+        {% for dep in departments %}
         <li class="list-group-item d-flex">
             <div class="p-10 m-0 w-100">
-                <p class="p-10 m-0"><a href="employees.html">Department 1</a></p>
+                <p class="p-10 m-0"><a href="employees.html">{{ dep.name }}</a></p>
                 <p class="p-10 m-0">avg salary: £44 890</p>
             </div>
-            <a class="btn btn-light" href="edit-dep" role="button">Edit</a>
-            <button class="btn btn-secondary" type="button">Delete</button>
+            <a class="btn btn-light" href="/edit-dep/{{ dep.id }}" role="button">Edit</a>
+            <a class="btn btn-secondary" href="/delete/{{ dep.id }}" type="button">Delete</a>
         </li>
-        <li class="list-group-item d-flex list-group-item-secondary">
-            <div class="p-10 m-0 w-100">
-                <p class="p-0 m-0 flex-grow-1"><a href="employees.html">Department 2</a></p>
-                <p class="p-10 m-0">avg salary: £51 189</p>
-            </div>
-            <a class="btn btn-light" href="edit-dep" role="button">Edit</a>
-            <button class="btn btn-secondary" type="button">Delete</button>
-        </li>
-        <li class="list-group-item d-flex">
-            <div class="p-10 m-0 w-100">
-                <p class="p-0 m-0 flex-grow-1"><a href="employees.html">Department 3</a></p>
-                <p class="p-10 m-0">avg salary: £49 320</p>
-            </div>
-            <a class="btn btn-light" href="edit-dep" role="button">Edit</a>
-            <button class="btn btn-secondary" type="button">Delete</button>
-        </li>
-        <li class="list-group-item d-flex list-group-item-secondary">
-            <div class="p-10 m-0 w-100">
-                <p class="p-0 m-0 flex-grow-1"><a href="employees.html">Department 4</a></p>
-                <p class="p-10 m-0">avg salary: £51 452</p>
-            </div>
-            <a class="btn btn-light" href="edit-dep" role="button">Edit</a>
-            <button class="btn btn-secondary" type="button">Delete</button>
-        </li>
-        <li class="list-group-item d-flex">
-            <div class="p-10 m-0 w-100">
-                <p class="p-0 m-0 flex-grow-1"><a href="employees.html">Department 5</a></p>
-                <p class="p-10 m-0">avg salary: £52 800</p>
-            </div>
-                <a class="btn btn-light" href="edit-dep" role="button">Edit</a>
-                <button class="btn btn-secondary" type="button">Delete</button>
-        </li>
+        {% endfor %}
     </ul>
     <div class="container">
-        <a class="btn float-right btn-primary mt-2" href="edit-dep" role="button">Add department</a>
+        <a class="btn float-right btn-primary mt-2" href="add-dep" role="button">Add department</a>
     </div>
 </div>
 {% endblock %}
