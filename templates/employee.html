@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Add or Edit Employee</title>
+{% endblock %}
+
+{% block body %}
+<div class="jumbotron text-center">
+    <h1>Employee</h1>
+    <p>{{department_name}}</p>
+</div>
+<div class="container">
+    {% if emp.id == None %}
+    <form action="/department/{{department_id}}/employees" method="POST">{% else %}
+        <form action="/edit-employee/{{emp.id}}" method="POST">{% endif %}
+            <div class="form-group">
+                <label>Employee's name</label>
+                <input class="form-control" id="name" name="name" placeholder="Enter name"
+                       value="{{emp.name}}">
+            </div>
+            <div class="form-group">
+                <label>Employee's role</label>
+                <input class="form-control" name="role" placeholder="Enter role"
+                       value="{{emp.role}}">
+            </div>
+            <div class="form-group">
+                <label>Employee's date of birth</label>
+                <input class="form-control" name="date_of_birth" placeholder="Enter date of birth"
+                       value="{{emp.date_of_birth}}">
+            </div>
+            <div class="form-group"><label>Employee's salary</label>
+                <input class="form-control" name="salary" placeholder="Enter salary"
+                       value="{{emp.salary}}">
+            </div>
+            <div class="form-group"><label>Employee's start date</label>
+                <input class="form-control" name="start_date" placeholder="Enter start date"
+                       value="{{emp.satrt_date}}">
+            </div>
+            <button class="btn btn-primary" type="submit">Save</button>
+            <button class="btn btn-light">Cancel</button>
+        </form>
+        {% endblock %}
+    </form>
+</div>
