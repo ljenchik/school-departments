@@ -10,31 +10,31 @@
     <p>{{department_name}}</p>
 </div>
 <div class="container">
-    {% if emp.id == None %}
+    {% if employee.id == None %}
     <form action="/department/{{department_id}}/employees" method="POST">{% else %}
-        <form action="/edit-employee/{{emp.id}}" method="POST">{% endif %}
+        <form action="/edit-employee/{{employee.id}}" method="POST">{% endif %}
             <div class="form-group">
                 <label>Employee's name</label>
                 <input class="form-control" id="name" name="name" placeholder="Enter name"
-                       value="{{emp.name}}">
+                       value="{{ employee.name }}">
             </div>
             <div class="form-group">
                 <label>Employee's role</label>
                 <input class="form-control" name="role" placeholder="Enter role"
-                       value="{{emp.role}}">
+                       value="{{employee.role}}">
             </div>
             <div class="form-group">
                 <label>Employee's date of birth</label>
                 <input class="form-control" name="date_of_birth" placeholder="Enter date of birth"
-                       value="{{emp.date_of_birth}}">
+                       value="{{employee.date_of_birth}}"
             </div>
             <div class="form-group"><label>Employee's salary</label>
                 <input class="form-control" name="salary" placeholder="Enter salary"
-                       value="{{emp.salary}}">
+                       value="{{employee.salary}}">
             </div>
             <div class="form-group"><label>Employee's start date</label>
                 <input class="form-control" name="start_date" placeholder="Enter start date"
-                       value="{{emp.satrt_date}}">
+                       value="{{employee.satrt_date}}">
             </div>
             <button class="btn btn-primary" type="submit">Save</button>
             <button class="btn btn-light">Cancel</button>

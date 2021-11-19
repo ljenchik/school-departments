@@ -7,26 +7,58 @@
 {% block body %}
 <div class="jumbotron text-center">
     <h1>Employees</h1>
-    <p>{{department_name}}</p>
+    <p>{{ department_name }}</p>
 </div>
 
 <div class="container">
-    <ul class="list-group cProductsList">
+    <div class="p-3"><a href="/" role="button">&lt; &lt; Back to Departments</a></div>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Name</th>
+            <th scope="col">Role</th>
+            <th scope="col">Date of birth</th>
+            <th scope="col">Salary</th>
+            <th scope="col">Start date</th>
+        </tr>
+        </thead>
+        <tbody>
         {% for emp in employees %}
-        <li class="list-group-item d-flex">
-            <div class="p-10 m-0 w-100">
-                <p class="p-10 m-0"><a href="employee.html">{{ emp.name }}</a></p>
-            </div>
-            <a class="btn btn-light" href="/edit-employee/{{ emp.id }}" role="button">Edit</a>
-            <a class="btn btn-secondary" href="/delete-employee/{{ emp.id }}" type="button">Delete</a>
-        </li>
+        <tr>
+            <th scope="row">{{ employees.index(emp) + 1 }}</th>
+            <td>
+                <p>{{ emp.name }}</p>
+            </td>
+            <td>
+                <p>{{ emp.role }}</p>
+            </td>
+            <td>
+                <p>{{ emp.date_of_birth }}</p>
+            </td>
+            <td>
+                <p>{{ emp.salary }}</p>
+            </td>
+            <td>
+                <p>{{ emp.start_date }}</p>
+            </td>
+
+
+            <td><a class="btn btn-light" href="/edit-employee/{{ emp.id }}" role="button">Edit</a>
+                <a class="btn btn-secondary" href="/delete-employee/{{ emp.id }}" type="button">Delete</a>
+            </td>
+
+        </tr>
         {% endfor %}
-    </ul>
+    </table>
+
     <div class="container">
-        <a class="btn float-right btn-primary mt-2" href="/add-employee/{{department_id}}" role="button">Add employee</a>
+        <a class="btn float-right btn-primary mt-2" href="/add-employee/{{ department_id }}" role="button">Add employee</a>
     </div>
+
 </div>
 {% endblock %}
+
 
 
 

@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from flask import Flask, render_template, request, redirect
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -27,9 +26,9 @@ class Employee(db.Model):
     name = db.Column(db.String(200), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     role = db.Column(db.String(100))
-    date_of_birth = db.Column(db.DateTime, default=datetime.utcnow)
+    date_of_birth = db.Column(db.DateTime)
     salary = db.Column(db.Float)
-    start_date = db.Column(db.DateTime, default=datetime.utcnow)
+    start_date = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<Employee %r>' % self.id
@@ -86,7 +85,7 @@ def edit(id):
 def index_emp(department_id):
     if request.method == 'POST':
         employee_name = request.form['name']
-        new_employee = Employee(name = employee_name, department_id = department_id)
+        new_employee = Employee(name=employee_name, department_id=department_id)
         try:
             db.session.add(new_employee)
             db.session.commit()
@@ -97,13 +96,15 @@ def index_emp(department_id):
     else:
         employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
         dep = Department.query.get_or_404(department_id)
-        return render_template('employees.html', employees=employees, department_name=dep.name, department_id=department_id)
+        return render_template('employees.html', employees=employees, department_name=dep.name,
+                               department_id=department_id)
 
 
 @app.route('/add-employee/<int:id>')
 def employee_add(id):
     dep = Department.query.get_or_404(id)
-    return render_template('employee.html', emp=Employee(name=''), department_name=dep.name, department_id = id)
+    return render_template('employee.html', employee=Employee(name='', role='', date_of_birth='', salary='', start_date=''),
+                           department_name=dep.name, department_id = dep.id)
 
 
 @app.route('/delete-employee/<int:employee_id>')
@@ -118,19 +119,21 @@ def emp_delete(employee_id):
         return 'There was an issue deleting this employee'
 
 
-@app.route('/edit-employee/<int:id>', methods=['GET', 'POST'])
-def emp_edit(id):
-    emp_to_edit = Employee.query.get_or_404(id)
+@app.route('/edit-employee/<int:employee_id>', methods=['GET', 'POST'])
+def emp_edit(employee_id):
+    emp_to_edit = Employee.query.get_or_404(employee_id)
+    dep = Department.query.get_or_404(emp_to_edit.department_id)
     if request.method == 'POST':
         emp_to_edit.name = request.form['name']
 
         try:
             db.session.commit()
-            return redirect('/')
+            link = f'/department/{emp_to_edit.department_id}/employees'
+            return redirect(link)
         except:
             return 'There is an issue with editing this employee'
     else:
-        return render_template('employee.html', emp=emp_to_edit)
+        return render_template('employee.html', employee=emp_to_edit, department_name=dep.name, department_id = dep.id)
 
 
 if __name__ == "__main__":
