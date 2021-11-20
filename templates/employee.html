@@ -11,33 +11,43 @@
 </div>
 <div class="container">
     {% if employee.id == None %}
-    <form action="/department/{{department_id}}/employees" method="POST">{% else %}
+    <form action="/add-employee/{{department_id}}" method="POST">{% else %}
         <form action="/edit-employee/{{employee.id}}" method="POST">{% endif %}
             <div class="form-group">
                 <label>Employee's name</label>
-                <input class="form-control" id="name" name="name" placeholder="Enter name"
-                       value="{{ employee.name }}">
+                <input class="form-control" type="text" pattern="[A-Za-z\W]+" id="name" name="name" placeholder="Enter name"
+                       value="{{ employee.name }}" title="Please enter letters only" required="">
             </div>
             <div class="form-group">
                 <label>Employee's role</label>
                 <input class="form-control" name="role" placeholder="Enter role"
-                       value="{{employee.role}}">
+                       value="{{employee.role}}" required="">
             </div>
             <div class="form-group">
                 <label>Employee's date of birth</label>
-                <input class="form-control" name="date_of_birth" placeholder="Enter date of birth"
-                       value="{{employee.date_of_birth}}"
+                {% if employee.date_of_birth == None %}
+                <input class="form-control" type="date" name="date_of_birth" placeholder="Enter date of birth"
+                       required="">
+                {%else%}
+                <input class="form-control" type="date" name="date_of_birth" placeholder="Enter date of birth"
+                       value="{{employee.date_of_birth.strftime('%Y-%m-%d')}}" required="">
+                {% endif%}
             </div>
             <div class="form-group"><label>Employee's salary</label>
-                <input class="form-control" name="salary" placeholder="Enter salary"
-                       value="{{employee.salary}}">
+                <input class="form-control" name="salary" type="text" pattern="^[1-9]\d*([, \W]\d+)?$" placeholder="Enter salary"
+                       value="{{employee.salary}}" required="">
             </div>
             <div class="form-group"><label>Employee's start date</label>
-                <input class="form-control" name="start_date" placeholder="Enter start date"
-                       value="{{employee.satrt_date}}">
+                <input class="form-control" type="date" name="start_date" placeholder="Enter start date"
+                       value="{{employee.start_date.strftime('%Y-%m-%d')}}" required="">
             </div>
+            {% if error != '' %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+            {%endif%}
             <button class="btn btn-primary" type="submit">Save</button>
-            <button class="btn btn-light">Cancel</button>
+            <a class="btn btn-light" href="/department/{{ department_id }}/employees" role="button">Cancel</a>
         </form>
         {% endblock %}
     </form>

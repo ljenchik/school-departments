@@ -34,13 +34,13 @@
                 <p>{{ emp.role }}</p>
             </td>
             <td>
-                <p>{{ emp.date_of_birth }}</p>
+                <p>{{ emp.date_of_birth.strftime('%Y-%m-%d') }}</p>
             </td>
             <td>
                 <p>{{ emp.salary }}</p>
             </td>
             <td>
-                <p>{{ emp.start_date }}</p>
+                <p>{{ emp.start_date.strftime('%Y-%m-%d') }}</p>
             </td>
 
 
