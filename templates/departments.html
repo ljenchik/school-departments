@@ -16,7 +16,7 @@
         <li class="list-group-item d-flex">
             <div class="p-10 m-0 w-100">
                 <p class="p-10 m-0"><a href="/department/{{dep.id}}/employees">{{ dep.name }}</a></p>
-                <p class="p-10 m-0">avg salary: £44 890</p>
+                <p class="p-10 m-0">avg salary: £{{dep.avg_salary}}</p>
             </div>
             <a class="btn btn-light" href="/edit-dep/{{ dep.id }}" role="button">Edit</a>
             <a class="btn btn-secondary" href="/delete/{{ dep.id }}" type="button">Delete</a>
