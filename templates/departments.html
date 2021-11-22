@@ -16,7 +16,8 @@
         <li class="list-group-item d-flex">
             <div class="p-10 m-0 w-100">
                 <p class="p-10 m-0"><a href="/department/{{dep.id}}/employees">{{ dep.name }}</a></p>
-                <p class="p-10 m-0">avg salary: £{{dep.avg_salary}}</p>
+                {% if dep.avg_salary != None  %}
+                <p class="p-10 m-0">avg salary: £{{dep.avg_salary}}</p>{% endif %}
             </div>
             <a class="btn btn-light" href="/edit-dep/{{ dep.id }}" role="button">Edit</a>
             <a class="btn btn-secondary" href="/delete/{{ dep.id }}" type="button">Delete</a>
@@ -24,7 +25,7 @@
         {% endfor %}
     </ul>
     <div class="container">
-        <a class="btn float-right btn-primary mt-2" href="add-dep" role="button">Add department</a>
+        <a class="btn float-right btn-primary mt-2" href="/add-dep" role="button">Add department</a>
     </div>
 </div>
 {% endblock %}

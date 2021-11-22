@@ -11,7 +11,7 @@
 </div>
 <div class="container">
     {% if dep.id == None %}
-    <form action="/" method="POST">
+    <form action="/add-dep" method="POST">
     {% else %}
     <form action="/edit-dep/{{dep.id}}" method="POST">
         {% endif %}

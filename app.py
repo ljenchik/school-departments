@@ -1,32 +1,23 @@
 from datetime import datetime
+
+from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, redirect
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
-from dateutil.relativedelta import relativedelta
-
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)
+    name = db.Column(db.String(200), nullable=False, unique = True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    __table_args__ = {'info': dict(is_view=True)}
-
 
     def __repr__(self):
         return '<Department %r>' % self.id
-
-class Department_Avg_Salary(Department):
-    avg_salary = db.Column(db.Float)
-
-    def __repr__(self):
-        return '<Department_avg_salary %r>' % self.id
 
 
 class Employee(db.Model):
@@ -43,8 +34,27 @@ class Employee(db.Model):
         return '<Employee %r>' % self.id
 
 
-@app.route('/', methods=['POST', 'GET'])
-def index():
+@app.route('/')
+def index_department():
+    class Department_Avg_Salary(Department):
+        avg_salary = db.Column(db.Float)
+
+    departments = Department_Avg_Salary.query.from_statement(
+        db.text("""select d.*, avg_salary
+                        from department d 
+                        left join (
+                            select d.id, round(avg(e.salary), 2) avg_salary
+                            from department d 
+                            join employee e on d.id  = e.department_id 
+                            GROUP by d.id
+                        ) avg_sal on avg_sal.id = d.id
+                        """)
+    ).all()
+    return render_template('departments.html', departments = departments)
+
+
+@app.route('/add-dep', methods=['POST', 'GET'])
+def add_department():
     if request.method == 'POST':
         department_name = request.form['name']
         new_department = Department(name=department_name)
@@ -55,38 +65,12 @@ def index():
         except:
             return 'There was an issue adding a new department'
     else:
-        departments = Department_Avg_Salary.query.from_statement(
-            db.text("""select d.*, avg_salary
-                    from department d 
-                    join (
-                        select d.id, round(avg(e.salary), 2) avg_salary
-                        from department d 
-                        join employee e on d.id  = e.department_id 
-                        GROUP by d.id
-                    ) avg_sal on avg_sal.id = d.id
-                    """)
-        ).all()
-        return render_template('departments.html', departments=departments)
-
-
-@app.route('/add-dep')
-def departmet_add():
-    return render_template('department.html', dep=Department(name=''))
-
-
-@app.route('/delete/<int:id>')
-def delete(id):
-    dep_to_delete = Department.query.get_or_404(id)
-    try:
-        db.session.delete(dep_to_delete)
-        db.session.commit()
-        return redirect('/')
-    except:
-        return 'There was an issue deleting this department'
+        new_department = Department(name='')
+        return render_template('department.html', dep=new_department)
 
 
 @app.route('/edit-dep/<int:id>', methods=['GET', 'POST'])
-def edit(id):
+def edit_department(id):
     dep_to_edit = Department.query.get_or_404(id)
     if request.method == 'POST':
         dep_to_edit.name = request.form['name']
@@ -100,8 +84,20 @@ def edit(id):
         return render_template('department.html', dep=dep_to_edit)
 
 
+@app.route('/delete/<int:id>')
+def delete_department(id):
+    dep_to_delete = Department.query.get_or_404(id)
+    try:
+        db.session.delete(dep_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'There was an issue deleting this department'
+
+
+
 @app.route('/department/<int:department_id>/employees')
-def index_emp(department_id):
+def index_employee(department_id):
     employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
     dep = Department.query.get_or_404(department_id)
     return render_template('employees.html', employees=employees, department_name=dep.name,
@@ -120,7 +116,7 @@ def parse_float(value):
 
 
 @app.route('/add-employee/<int:department_id>', methods=['POST', 'GET'])
-def employee_add(department_id):
+def add_employee(department_id):
     if request.method == 'POST':
         dep = Department.query.get_or_404(department_id)
         new_employee = Employee(department_id=department_id)
@@ -146,7 +142,8 @@ def employee_add(department_id):
     else:
         dep = Department.query.get_or_404(department_id)
         employee = Employee(name='', role='', salary='', start_date=datetime.today())
-        return render_template('employee.html', employee=employee, department_name=dep.name, department_id=dep.id, error='')
+        return render_template('employee.html', employee=employee, department_name=dep.name, department_id=dep.id,
+                               error='')
 
 
 def fill_employee_from_request(new_employee):
@@ -157,10 +154,8 @@ def fill_employee_from_request(new_employee):
     new_employee.start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d')
 
 
-
-
 @app.route('/edit-employee/<int:employee_id>', methods=['GET', 'POST'])
-def emp_edit(employee_id):
+def edit_employee(employee_id):
     emp_to_edit = Employee.query.get_or_404(employee_id)
     dep = Department.query.get_or_404(emp_to_edit.department_id)
 
@@ -186,8 +181,9 @@ def emp_edit(employee_id):
         return render_template('employee.html', employee=emp_to_edit, department_name=dep.name, department_id=dep.id,
                                error='')
 
+
 @app.route('/delete-employee/<int:employee_id>')
-def emp_delete(employee_id):
+def delete_employee(employee_id):
     emp_to_delete = Employee.query.get_or_404(employee_id)
     try:
         db.session.delete(emp_to_delete)
@@ -196,7 +192,6 @@ def emp_delete(employee_id):
         return redirect(link)
     except:
         return 'There was an issue deleting this employee'
-
 
 
 if __name__ == "__main__":
