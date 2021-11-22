@@ -33,12 +33,19 @@ class Employee(db.Model):
     def __repr__(self):
         return '<Employee %r>' % self.id
 
+class Department_Avg_Salary(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False, unique = True)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    avg_salary = db.Column(db.Float)
+    __tablename__ = 'Department_Avg_Salary_ignore'
+
+    def __repr__(self):
+        return '<Department_avg_salary %r>' % self.id
+
 
 @app.route('/')
 def index_department():
-    class Department_Avg_Salary(Department):
-        avg_salary = db.Column(db.Float)
-
     departments = Department_Avg_Salary.query.from_statement(
         db.text("""select d.*, avg_salary
                         from department d 
