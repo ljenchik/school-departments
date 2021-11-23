@@ -11,20 +11,26 @@
 </div>
 <div class="container">
     {% if dep.id == None %}
-    <form action="/add-dep" method="POST">
-    {% else %}
-    <form action="/edit-dep/{{dep.id}}" method="POST">
-        {% endif %}
-        <div class="form-group">
-            <label>Department name</label>
-            <input class="form-control" id="name" name="name" placeholder="Enter department name"
-                   value="{{dep.name}}">
-        </div>
-        <button class="btn btn-primary" type="submit">Save</button>
-        <button class="btn btn-light">Cancel</button>
+    <form action="/add-department" method="POST">
+        {% else %}
+        <form action="/edit-department/{{dep.id}}" method="POST">
+            {% endif %}
+            <div class="form-group">
+                <label>Department name</label>
+                <input class="form-control" id="name" name="name" placeholder="Enter department name"
+                       value="{{dep.name}}">
+            </div>
+            {% if error != '' %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+            {%endif%}
+            <button class="btn btn-primary" type="submit">Save</button>
+            <a class="btn btn-light" href="/" role="button">Cancel</a>
+        </form>
+        {% endblock %}
     </form>
-    {% endblock %}
-</form></div>
+</div>
 
 
 

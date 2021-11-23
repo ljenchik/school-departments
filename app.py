@@ -11,9 +11,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localh
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False, unique = True)
+    name = db.Column(db.String(200), nullable=False, unique=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -33,9 +34,10 @@ class Employee(db.Model):
     def __repr__(self):
         return '<Employee %r>' % self.id
 
+
 class Department_Avg_Salary(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False, unique = True)
+    name = db.Column(db.String(200), nullable=False, unique=True)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     avg_salary = db.Column(db.Float)
     __tablename__ = 'Department_Avg_Salary_ignore'
@@ -57,26 +59,35 @@ def index_department():
                         ) avg_sal on avg_sal.id = d.id
                         """)
     ).all()
-    return render_template('departments.html', departments = departments)
+    return render_template('departments.html', departments=departments)
 
 
-@app.route('/add-dep', methods=['POST', 'GET'])
+@app.route('/add-department', methods=['POST', 'GET'])
 def add_department():
     if request.method == 'POST':
         department_name = request.form['name']
-        new_department = Department(name=department_name)
+        new_department = Department(name=department_name.strip())
+
+        if new_department.name == '':
+            return render_template('department.html', dep=new_department,
+                                   error='Please, enter new department')
         try:
             db.session.add(new_department)
             db.session.commit()
             return redirect('/')
-        except:
-            return 'There was an issue adding a new department'
+        except Exception as e:
+            db.session.rollback()
+            error = str(e)
+            if 'Duplicate' in error:
+                error = 'Department with this name already exists'
+            return render_template('department.html', dep=new_department,
+                                   error=error)
     else:
         new_department = Department(name='')
-        return render_template('department.html', dep=new_department)
+        return render_template('department.html', dep=new_department, error='')
 
 
-@app.route('/edit-dep/<int:id>', methods=['GET', 'POST'])
+@app.route('/edit-department/<int:id>', methods=['GET', 'POST'])
 def edit_department(id):
     dep_to_edit = Department.query.get_or_404(id)
     if request.method == 'POST':
@@ -91,7 +102,7 @@ def edit_department(id):
         return render_template('department.html', dep=dep_to_edit)
 
 
-@app.route('/delete/<int:id>')
+@app.route('/delete-department/<int:id>')
 def delete_department(id):
     dep_to_delete = Department.query.get_or_404(id)
     try:
@@ -100,7 +111,6 @@ def delete_department(id):
         return redirect('/')
     except:
         return 'There was an issue deleting this department'
-
 
 
 @app.route('/department/<int:department_id>/employees')
@@ -141,7 +151,6 @@ def add_employee(department_id):
             link = f'/department/{department_id}/employees'
             return redirect(link)
         except Exception as e:
-            print('There was an issue adding a new employee: ' + str(e))
             db.session.rollback()
             return render_template('employee.html', employee=new_employee, department_name=dep.name,
                                    department_id=department_id,
