@@ -3,52 +3,20 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, redirect
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
+from models.department import Department
+from models.db_shared import db
+from models.department_avg_salary import DepartmentAvgSalary
+from models.employee import Employee
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
-
-
-class Department(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False, unique=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return '<Department %r>' % self.id
-
-
-class Employee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    department_id = db.Column(db.Integer, ForeignKey(Department.id), nullable=False)
-    name = db.Column(db.String(200), nullable=False)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    role = db.Column(db.String(100))
-    date_of_birth = db.Column(db.DateTime)
-    salary = db.Column(db.Float)
-    start_date = db.Column(db.DateTime)
-
-    def __repr__(self):
-        return '<Employee %r>' % self.id
-
-
-class Department_Avg_Salary(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False, unique=True)
-    date_created = db.Column(db.DateTime, default=datetime.utcnow)
-    avg_salary = db.Column(db.Float)
-    __tablename__ = 'Department_Avg_Salary_ignore'
-
-    def __repr__(self):
-        return '<Department_avg_salary %r>' % self.id
 
 
 @app.route('/')
 def index_department():
-    departments = Department_Avg_Salary.query.from_statement(
+    departments = DepartmentAvgSalary.query.from_statement(
         db.text("""select d.*, avg_salary
                         from department d 
                         left join (
