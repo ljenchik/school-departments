@@ -3,10 +3,13 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, redirect
 from flask_migrate import Migrate
+from werkzeug.exceptions import abort
+
 from models.department import Department
 from models.db_shared import db
-from models.department_avg_salary import DepartmentAvgSalary
 from models.employee import Employee
+from service.department_service import read_departments_with_salaries, create_department_or_error, get_department_by_id, \
+    update_department
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
@@ -16,17 +19,7 @@ migrate = Migrate(app, db)
 
 @app.route('/')
 def index_department():
-    departments = DepartmentAvgSalary.query.from_statement(
-        db.text("""select d.*, avg_salary
-                        from department d 
-                        left join (
-                            select d.id, round(avg(e.salary), 2) avg_salary
-                            from department d 
-                            join employee e on d.id  = e.department_id 
-                            GROUP by d.id
-                        ) avg_sal on avg_sal.id = d.id
-                        """)
-    ).all()
+    departments = read_departments_with_salaries()
     return render_template('departments.html', departments=departments)
 
 
@@ -35,44 +28,40 @@ def add_department():
     if request.method == 'POST':
         department_name = request.form['name']
         new_department = Department(name=department_name.strip())
-
         if new_department.name == '':
             return render_template('department.html', dep=new_department,
                                    error='Please, enter new department')
-        try:
-            db.session.add(new_department)
-            db.session.commit()
-            return redirect('/')
-        except Exception as e:
-            db.session.rollback()
-            error = str(e)
-            if 'Duplicate' in error:
-                error = 'Department with this name already exists'
+        error = create_department_or_error(new_department)
+        if error is not None:
             return render_template('department.html', dep=new_department,
-                                   error=error)
+                               error=error)
+        return redirect('/')
     else:
         new_department = Department(name='')
         return render_template('department.html', dep=new_department, error='')
 
 
+def get_or_404(model):
+    if model is None:
+        abort(404)
+    return model
+
+
 @app.route('/edit-department/<int:id>', methods=['GET', 'POST'])
 def edit_department(id):
-    dep_to_edit = Department.query.get_or_404(id)
+    dep_to_edit = get_or_404(get_department_by_id(id))
     if request.method == 'POST':
-        dep_to_edit.name = request.form['name']
-
-        try:
-            db.session.commit()
-            return redirect('/')
-        except:
-            return 'There is an issue with editing this department'
+        error = update_department(dep_to_edit, request.form['name'])
+        if error is not None:
+            return error
+        return redirect('/')
     else:
         return render_template('department.html', dep=dep_to_edit)
 
 
 @app.route('/delete-department/<int:id>')
 def delete_department(id):
-    dep_to_delete = Department.query.get_or_404(id)
+    dep_to_delete = get_or_404(get_department_by_id(id))
     try:
         db.session.delete(dep_to_delete)
         db.session.commit()
