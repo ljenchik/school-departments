@@ -10,6 +10,7 @@ from models.db_shared import db
 from models.employee import Employee
 from service.department_service import read_departments_with_salaries, create_department_or_error, get_department_by_id, \
     update_department, delete_department_by_id
+from service.employee_service import create_employee_or_error, update_employee, validate_employee, parse_float
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
@@ -74,16 +75,6 @@ def index_employee(department_id):
                            department_id=department_id)
 
 
-def validate_employee(emp: Employee) -> str:
-    if relativedelta(emp.start_date, emp.date_of_birth).years < 18:
-        return 'Employee must be at least 18 to start work'
-    if datetime.today().year - emp.date_of_birth.year > 100:
-        return "Please check employee's date of birth"
-
-
-def parse_float(value):
-    return float((value).replace(" ", "").replace(",", ""))
-
 
 @app.route('/add-employee/<int:department_id>', methods=['POST', 'GET'])
 def add_employee(department_id):
@@ -92,27 +83,19 @@ def add_employee(department_id):
         new_employee = Employee(department_id=department_id)
         fill_employee_from_request(new_employee)
         validation_error = validate_employee(new_employee)
-
         if validation_error is not None:
             return render_template('employee.html', employee=new_employee, department_name=dep.name,
-                                   department_id=department_id,
-                                   error=validation_error)
-
-        try:
-            db.session.add(new_employee)
-            db.session.commit()
-            link = f'/department/{department_id}/employees'
-            return redirect(link)
-        except Exception as e:
-            db.session.rollback()
+                                   department_id=department_id, error=validation_error)
+        error = create_employee_or_error(new_employee)
+        if error is not None:
             return render_template('employee.html', employee=new_employee, department_name=dep.name,
-                                   department_id=department_id,
-                                   error='There was an issue adding a new employee: ' + str(e))
+                                   department_id=department_id, error=error)
+        return redirect(f'/department/{department_id}/employees')
     else:
         dep = Department.query.get_or_404(department_id)
         employee = Employee(name='', role='', salary='', start_date=datetime.today())
-        return render_template('employee.html', employee=employee, department_name=dep.name, department_id=dep.id,
-                               error='')
+        return render_template('employee.html', employee=employee, department_name=dep.name,
+                               department_id=dep.id, error='')
 
 
 def fill_employee_from_request(new_employee):
@@ -130,22 +113,12 @@ def edit_employee(employee_id):
 
     if request.method == 'POST':
         fill_employee_from_request(emp_to_edit)
-        validation_error = validate_employee(emp_to_edit)
-
-        if validation_error is not None:
+        error = update_employee(emp_to_edit, emp_to_edit.name, emp_to_edit.role, emp_to_edit.date_of_birth,
+                                emp_to_edit.salary, emp_to_edit.start_date)
+        if error is not None:
             return render_template('employee.html', employee=emp_to_edit, department_name=dep.name,
-                                   department_id=dep.id, error=validation_error)
-
-        try:
-            db.session.commit()
-            link = f'/department/{emp_to_edit.department_id}/employees'
-            return redirect(link)
-        except Exception as e:
-            print('There was an issue adding a new employee: ' + str(e))
-            db.session.rollback()
-            return render_template('employee.html', employee=emp_to_edit, department_name=dep.name,
-                                   department_id=dep.id,
-                                   error='There was an issue editing an employee: ' + str(e))
+                                   department_id=dep.id, error=error)
+        return redirect(f'/department/{emp_to_edit.department_id}/employees')
     else:
         return render_template('employee.html', employee=emp_to_edit, department_name=dep.name, department_id=dep.id,
                                error='')
