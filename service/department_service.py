@@ -18,7 +18,7 @@ def read_departments_with_salaries() -> list:
     return departments
 
 
-def create_department_or_error(new_department : Department) -> str:
+def create_department_or_error(new_department: Department) -> str:
     try:
         db.session.add(new_department)
         db.session.commit()
@@ -30,14 +30,26 @@ def create_department_or_error(new_department : Department) -> str:
         return error
 
 
-def get_department_by_id(id : int) -> Department:
+def get_department_by_id(id: int) -> Department:
     department = Department.query.get(id)
     return department
 
 
 def update_department(department, name):
-     department.name = name
-     try:
+    department.name = name
+    if name.strip() == '':
+        return 'Please enter department name'
+    try:
         db.session.commit()
-     except:
+    except:
         return 'There is an issue with editing this department'
+
+
+def delete_department_by_id(id: int):
+    dep_to_delete = get_department_by_id(id)
+    try:
+        db.session.delete(dep_to_delete)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return 'You cannot delete department with employees'

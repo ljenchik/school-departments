@@ -9,7 +9,7 @@ from models.department import Department
 from models.db_shared import db
 from models.employee import Employee
 from service.department_service import read_departments_with_salaries, create_department_or_error, get_department_by_id, \
-    update_department
+    update_department, delete_department_by_id
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
@@ -17,10 +17,17 @@ db.init_app(app)
 migrate = Migrate(app, db)
 
 
-@app.route('/')
+@app.route('/', methods = ['POST', 'GET'])
 def index_department():
+    if request.method == 'POST':
+        department_id = request.form['id']
+        error = delete_department_by_id(department_id)
+        if error is not None:
+            departments = read_departments_with_salaries()
+            return render_template('departments.html', departments=departments, error=error)
+
     departments = read_departments_with_salaries()
-    return render_template('departments.html', departments=departments)
+    return render_template('departments.html', departments=departments, error = '')
 
 
 @app.route('/add-department', methods=['POST', 'GET'])
@@ -30,11 +37,11 @@ def add_department():
         new_department = Department(name=department_name.strip())
         if new_department.name == '':
             return render_template('department.html', dep=new_department,
-                                   error='Please, enter new department')
+                                   error='Please enter new department')
         error = create_department_or_error(new_department)
         if error is not None:
             return render_template('department.html', dep=new_department,
-                               error=error)
+                                   error=error)
         return redirect('/')
     else:
         new_department = Department(name='')
@@ -53,21 +60,10 @@ def edit_department(id):
     if request.method == 'POST':
         error = update_department(dep_to_edit, request.form['name'])
         if error is not None:
-            return error
+            return render_template('department.html', dep=dep_to_edit, error=error)
         return redirect('/')
     else:
-        return render_template('department.html', dep=dep_to_edit)
-
-
-@app.route('/delete-department/<int:id>')
-def delete_department(id):
-    dep_to_delete = get_or_404(get_department_by_id(id))
-    try:
-        db.session.delete(dep_to_delete)
-        db.session.commit()
-        return redirect('/')
-    except:
-        return 'There was an issue deleting this department'
+        return render_template('department.html', dep=dep_to_edit, error = '')
 
 
 @app.route('/department/<int:department_id>/employees')
@@ -122,7 +118,7 @@ def add_employee(department_id):
 def fill_employee_from_request(new_employee):
     new_employee.name = request.form['name']
     new_employee.role = request.form['role']
-    new_employee.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d')
+    new_employee.date_of_birth = datetime.strptime(request.form['birthdate'], '%Y-%m-%d')
     new_employee.salary = parse_float(request.form['salary'])
     new_employee.start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d')
 

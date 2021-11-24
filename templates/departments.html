@@ -13,18 +13,26 @@
 <div class="container">
     <ul class="list-group cProductsList">
         {% for dep in departments %}
-        <li class="list-group-item d-flex">
-            <div class="p-10 m-0 w-100">
-                <p class="p-10 m-0"><a href="/department/{{dep.id}}/employees">{{ dep.name }}</a></p>
-                {% if dep.avg_salary != None %}
-                <p class="p-10 m-0">avg salary: £ {{dep.avg_salary}}</p>{% endif %}
-            </div>
-            <a class="btn btn-light" href="/edit-department/{{ dep.id }}" role="button">Edit</a>
-            <a class="btn btn-secondary" href="/delete-department/{{ dep.id }}" type="button">Delete</a>
-        </li>
+        <form action="/" method="POST">
+            <li class="list-group-item d-flex">
+                <div class="p-10 m-0 w-100">
+                    <p class="p-10 m-0"><a href="/department/{{dep.id}}/employees">{{ dep.name }}</a></p>
+                    {% if dep.avg_salary != None %}
+                    <p class="p-10 m-0">avg salary: £ {{dep.avg_salary}}</p>{% endif %}
+                </div>
+                <input type="hidden" type="text" name="id" value="{{dep.id}}">
+                <a class="btn btn-light" href="/edit-department/{{ dep.id }}" role="button">Edit</a>
+                <button class="btn btn-secondary" type="submit">Delete</button>
+            </li>
+        </form>
         {% endfor %}
     </ul>
     <div class="container">
+         {% if error != '' %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+        {%endif%}
         <a class="btn float-right btn-primary mt-2" href="/add-department" role="button">Add department</a>
     </div>
 </div>
