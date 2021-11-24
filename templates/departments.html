@@ -21,7 +21,7 @@
                     <p class="p-10 m-0">avg salary: £ {{dep.avg_salary}}</p>{% endif %}
                 </div>
                 <input type="hidden" type="text" name="id" value="{{dep.id}}">
-                <a class="btn btn-light" href="/edit-department/{{ dep.id }}" role="button">Edit</a>
+                <a class="btn btn-light" href="/department/edit/{{ dep.id }}" role="button">Edit</a>
                 <button class="btn btn-secondary" type="submit">Delete</button>
             </li>
         </form>
@@ -33,7 +33,7 @@
                 {{ error }}
             </div>
         {%endif%}
-        <a class="btn float-right btn-primary mt-2" href="/add-department" role="button">Add department</a>
+        <a class="btn float-right btn-primary mt-2" href="/department/add" role="button">Add department</a>
     </div>
 </div>
 {% endblock %}

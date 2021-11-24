@@ -30,7 +30,7 @@ def index_department():
     return render_template('departments.html', departments=departments, error = '')
 
 
-@app.route('/add-department', methods=['POST', 'GET'])
+@app.route('/department/add', methods=['POST', 'GET'])
 def add_department():
     if request.method == 'POST':
         department_name = request.form['name']
@@ -54,7 +54,7 @@ def get_or_404(model):
     return model
 
 
-@app.route('/edit-department/<int:id>', methods=['GET', 'POST'])
+@app.route('/department/edit/<int:id>', methods=['GET', 'POST'])
 def edit_department(id):
     dep_to_edit = get_or_404(get_department_by_id(id))
     if request.method == 'POST':

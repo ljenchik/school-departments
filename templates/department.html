@@ -11,9 +11,9 @@
 </div>
 <div class="container">
     {% if dep.id == None %}
-    <form action="/add-department" method="POST">
+    <form action="/department/add" method="POST">
         {% else %}
-        <form action="/edit-department/{{dep.id}}" method="POST">
+        <form action="/department/edit/{{dep.id}}" method="POST">
             {% endif %}
             <div class="form-group">
                 <label>Department name</label>
