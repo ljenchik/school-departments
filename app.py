@@ -1,16 +1,14 @@
 from datetime import datetime
-
-from dateutil.relativedelta import relativedelta
 from flask import Flask, render_template, request, redirect
 from flask_migrate import Migrate
 from werkzeug.exceptions import abort
-
 from models.department import Department
 from models.db_shared import db
 from models.employee import Employee
 from service.department_service import read_departments_with_salaries, create_department_or_error, get_department_by_id, \
     update_department, delete_department_by_id
-from service.employee_service import create_employee_or_error, update_employee, validate_employee, parse_float
+from service.employee_service import create_employee_or_error, update_employee, validate_employee, parse_float, \
+    delete_employee_by_id
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
@@ -67,13 +65,20 @@ def edit_department(id):
         return render_template('department.html', dep=dep_to_edit, error = '')
 
 
-@app.route('/department/<int:department_id>/employees')
+@app.route('/department/<int:department_id>/employees', methods = ['POST', 'GET'])
 def index_employee(department_id):
-    employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
     dep = Department.query.get_or_404(department_id)
-    return render_template('employees.html', employees=employees, department_name=dep.name,
-                           department_id=department_id)
+    if request.method == 'POST':
+        employee_id = request.form['id']
+        error = delete_employee_by_id(employee_id)
+        if error is not None:
+            employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
+            return render_template('employees.html', employees=employees, department_name=dep.name,
+                               department_id=department_id, error = error)
 
+    employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
+    return render_template('employees.html', employees=employees, department_name=dep.name,
+                        department_id=department_id, error = '')
 
 
 @app.route('/add-employee/<int:department_id>', methods=['POST', 'GET'])
@@ -123,17 +128,6 @@ def edit_employee(employee_id):
         return render_template('employee.html', employee=emp_to_edit, department_name=dep.name, department_id=dep.id,
                                error='')
 
-
-@app.route('/delete-employee/<int:employee_id>')
-def delete_employee(employee_id):
-    emp_to_delete = Employee.query.get_or_404(employee_id)
-    try:
-        db.session.delete(emp_to_delete)
-        db.session.commit()
-        link = f'/department/{emp_to_delete.department_id}/employees'
-        return redirect(link)
-    except:
-        return 'There was an issue deleting this employee'
 
 
 if __name__ == "__main__":

@@ -42,10 +42,12 @@
             <td>
                 <p>{{ emp.start_date.strftime('%Y-%m-%d') }}</p>
             </td>
-
-
-            <td><a class="btn btn-light" href="/edit-employee/{{ emp.id }}" role="button">Edit</a>
-                <a class="btn btn-secondary" href="/delete-employee/{{ emp.id }}" type="button">Delete</a>
+            <td>
+                <form method="POST">
+                    <input name="id"  type="hidden" value="{{emp.id}}">
+                    <a class="btn btn-light" href="/edit-employee/{{ emp.id }}" role="button">Edit</a>
+                    <button class="btn btn-secondary" type="submit">Delete</button>
+                </form>
             </td>
 
         </tr>
@@ -53,7 +55,8 @@
     </table>
 
     <div class="container">
-        <a class="btn float-right btn-primary mt-2" href="/add-employee/{{ department_id }}" role="button">Add employee</a>
+        <a class="btn float-right btn-primary mt-2" href="/add-employee/{{ department_id }}" role="button">Add
+            employee</a>
     </div>
 
 </div>

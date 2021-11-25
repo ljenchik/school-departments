@@ -13,7 +13,7 @@ def create_employee_or_error(new_employee: Employee):
         return 'There was an issue adding a new employee ' + str(e)
 
 
-def update_employee(employee: Employee, name:str, role, date_of_birth, salary, start_date):
+def update_employee(employee: Employee, name: str, role, date_of_birth, salary, start_date):
     employee.name = name
     employee.role = role
     employee.date_of_birth = date_of_birth
@@ -38,3 +38,13 @@ def validate_employee(emp: Employee) -> str:
 
 def parse_float(value):
     return float((value).replace(" ", "").replace(",", ""))
+
+
+def delete_employee_by_id(employee_id):
+    emp_to_delete = Employee.query.get_or_404(employee_id)
+    try:
+        db.session.delete(emp_to_delete)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        return 'There was an issue deleting this employee'
