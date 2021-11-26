@@ -9,11 +9,21 @@ from service.department_service import read_departments_with_salaries, create_de
     update_department, delete_department_by_id
 from service.employee_service import create_employee_or_error, update_employee, validate_employee, parse_float, \
     delete_employee_by_id
+from flask_restful import Api, Resource
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
 db.init_app(app)
 migrate = Migrate(app, db)
+api = Api(app)
+
+class DepartmentWithSalary(Resource):
+    def get(self):
+        return read_departments_with_salaries()
+
+
+api.add_resource(DepartmentWithSalary, '/api/department')
+
 
 
 @app.route('/', methods = ['POST', 'GET'])
