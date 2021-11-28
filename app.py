@@ -1,41 +1,43 @@
 from datetime import datetime
+
+import flask
+import requests
 from flask import Flask, render_template, request, redirect
 from flask_migrate import Migrate
 from werkzeug.exceptions import abort
 from models.department import Department
 from models.db_shared import db
 from models.employee import Employee
-from service.department_service import read_departments_with_salaries, create_department_or_error, get_department_by_id, \
-    update_department, delete_department_by_id
+
+from rest_api import DepartmentWithSalary, Department
+
+from service.department_service import create_department_or_error, get_department_by_id, \
+    update_department
+
 from service.employee_service import create_employee_or_error, update_employee, validate_employee, parse_float, \
     delete_employee_by_id
-from flask_restful import Api, Resource
+
+from flask_restful import Api
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
 db.init_app(app)
 migrate = Migrate(app, db)
+
 api = Api(app)
-
-class DepartmentWithSalary(Resource):
-    def get(self):
-        return read_departments_with_salaries()
-
-
 api.add_resource(DepartmentWithSalary, '/api/department')
-
-
+api.add_resource(Department, '/api/department/<int:department_id>')
 
 @app.route('/', methods = ['POST', 'GET'])
 def index_department():
     if request.method == 'POST':
         department_id = request.form['id']
-        error = delete_department_by_id(department_id)
+        error = requests.delete(flask.request.url_root + f'api/department/{department_id}')
         if error is not None:
-            departments = read_departments_with_salaries()
+            departments = requests.get(flask.request.url_root + 'api/department').json()
             return render_template('departments.html', departments=departments, error=error)
 
-    departments = read_departments_with_salaries()
+    departments = requests.get(flask.request.url_root + 'api/department').json()
     return render_template('departments.html', departments=departments, error = '')
 
 
@@ -77,18 +79,16 @@ def edit_department(id):
 
 @app.route('/department/<int:department_id>/employees', methods = ['POST', 'GET'])
 def index_employee(department_id):
-    dep = Department.query.get_or_404(department_id)
+    dep = requests.get(flask.request.url_root + f'api/department/{department_id}').json()
     if request.method == 'POST':
         employee_id = request.form['id']
         error = delete_employee_by_id(employee_id)
         if error is not None:
             employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
-            return render_template('employees.html', employees=employees, department_name=dep.name,
-                               department_id=department_id, error = error)
+            return render_template('employees.html', employees=employees, department=dep, error = error)
 
     employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
-    return render_template('employees.html', employees=employees, department_name=dep.name,
-                        department_id=department_id, error = '')
+    return render_template('employees.html', employees=employees, department=dep, error = '')
 
 
 @app.route('/add-employee/<int:department_id>', methods=['POST', 'GET'])
