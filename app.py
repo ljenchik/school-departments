@@ -11,8 +11,7 @@ from models.employee import Employee
 
 from rest_api import DepartmentWithSalary, Department
 
-from service.department_service import create_department_or_error, get_department_by_id, \
-    update_department
+from service.department_service import get_department_by_id, update_department
 
 from service.employee_service import create_employee_or_error, update_employee, validate_employee, parse_float, \
     delete_employee_by_id
@@ -32,10 +31,12 @@ api.add_resource(Department, '/api/department/<int:department_id>')
 def index_department():
     if request.method == 'POST':
         department_id = request.form['id']
-        error = requests.delete(flask.request.url_root + f'api/department/{department_id}')
-        if error is not None:
-            departments = requests.get(flask.request.url_root + 'api/department').json()
-            return render_template('departments.html', departments=departments, error=error)
+        error_dict = requests.delete(flask.request.url_root + f'api/department/{department_id}').json()
+
+        if len(error_dict) != 0:
+            error_text = error_dict['error']
+            departments = requests.get(flask.request.url_root + 'api/department')
+            return render_template('departments.html', departments=departments, error=error_text)
 
     departments = requests.get(flask.request.url_root + 'api/department').json()
     return render_template('departments.html', departments=departments, error = '')
@@ -45,17 +46,17 @@ def index_department():
 def add_department():
     if request.method == 'POST':
         department_name = request.form['name']
-        new_department = Department(name=department_name.strip())
-        if new_department.name == '':
-            return render_template('department.html', dep=new_department,
-                                   error='Please enter new department')
-        error = create_department_or_error(new_department)
-        if error is not None:
-            return render_template('department.html', dep=new_department,
-                                   error=error)
+        dict_department_name = {'name': department_name}
+        error_or_department = requests.post(flask.request.url_root + f'api/department', data = dict_department_name).json()
+        if 'error' in error_or_department:
+            error_text = error_or_department['error']
+            if error_text is not None:
+                dep = {'name' : department_name, 'id' : None}
+                return render_template('department.html', dep=dep,
+                                       error=error_text)
         return redirect('/')
     else:
-        new_department = Department(name='')
+        new_department = {"name" : '', 'id' : None}
         return render_template('department.html', dep=new_department, error='')
 
 

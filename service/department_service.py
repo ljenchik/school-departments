@@ -18,16 +18,19 @@ def read_departments_with_salaries() -> list:
     return departments
 
 
-def create_department_or_error(new_department: Department) -> str:
+def create_department_or_error(name:str) -> str:
+    new_department = Department(name = name)
     try:
         db.session.add(new_department)
         db.session.commit()
+        return (None, new_department)
     except Exception as e:
         db.session.rollback()
         error = str(e)
         if 'Duplicate' in error:
             error = 'Department with this name already exists'
-        return error
+        return (error, None)
+
 
 
 def get_department_by_id(id: int) -> Department:
