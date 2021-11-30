@@ -45,12 +45,16 @@ class Department(Resource):
     def get(self, department_id):
         return get_department_by_id(department_id)
 
-    def put(self, department_id):
+    @marshal_with(department_fields)
+    def put(self, department_id: int):
         args = department_put_args.parse_args()
         error = update_department(department_id, args.name)
         if error is not None:
             return {'error' : error}, 500
+
         return get_department_by_id(department_id), 201
+
+
 
     def delete(self, department_id):
         error = delete_department_by_id(department_id)

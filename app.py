@@ -27,7 +27,8 @@ api = Api(app)
 api.add_resource(DepartmentWithSalary, '/api/department')
 api.add_resource(Department, '/api/department/<int:department_id>')
 
-@app.route('/', methods = ['POST', 'GET'])
+
+@app.route('/', methods=['POST', 'GET'])
 def index_department():
     if request.method == 'POST':
         department_id = request.form['id']
@@ -39,7 +40,7 @@ def index_department():
             return render_template('departments.html', departments=departments, error=error_text)
 
     departments = requests.get(flask.request.url_root + 'api/department').json()
-    return render_template('departments.html', departments=departments, error = '')
+    return render_template('departments.html', departments=departments, error='')
 
 
 @app.route('/department/add', methods=['POST', 'GET'])
@@ -47,16 +48,17 @@ def add_department():
     if request.method == 'POST':
         department_name = request.form['name']
         dict_department_name = {'name': department_name}
-        error_or_department = requests.post(flask.request.url_root + f'api/department', data = dict_department_name).json()
+        error_or_department = requests.post(flask.request.url_root + f'api/department',
+                                            data=dict_department_name).json()
         if 'error' in error_or_department:
             error_text = error_or_department['error']
             if error_text is not None:
-                dep = {'name' : department_name, 'id' : None}
+                dep = {'name': department_name, 'id': None}
                 return render_template('department.html', dep=dep,
                                        error=error_text)
         return redirect('/')
     else:
-        new_department = {"name" : '', 'id' : None}
+        new_department = {"name": '', 'id': None}
         return render_template('department.html', dep=new_department, error='')
 
 
@@ -68,17 +70,25 @@ def get_or_404(model):
 
 @app.route('/department/edit/<int:id>', methods=['GET', 'POST'])
 def edit_department(id):
-    dep_to_edit = get_or_404(get_department_by_id(id))
     if request.method == 'POST':
-        error = update_department(dep_to_edit, request.form['name'])
-        if error is not None:
-            return render_template('department.html', dep=dep_to_edit, error=error)
+        dep_to_edit_name = request.form['name']
+        dict_dep_to_edit = {'name' : dep_to_edit_name}
+        error_or_department = requests.put(flask.request.url_root + f'api/department/{id}',
+                                    data=dict_dep_to_edit).json()
+        if 'error' in error_or_department:
+            error_text = error_or_department['error']
+            if error_text is not None:
+                dep_to_edit = {'name': dep_to_edit_name, 'id': id}
+                return render_template('department.html', dep=dep_to_edit,
+                                   error=error_text)
         return redirect('/')
     else:
-        return render_template('department.html', dep=dep_to_edit, error = '')
+        new_department = requests.get(flask.request.url_root + f'api/department/{id}').json()
+        return render_template('department.html', dep=new_department, error='')
 
 
-@app.route('/department/<int:department_id>/employees', methods = ['POST', 'GET'])
+
+@app.route('/department/<int:department_id>/employees', methods=['POST', 'GET'])
 def index_employee(department_id):
     dep = requests.get(flask.request.url_root + f'api/department/{department_id}').json()
     if request.method == 'POST':
@@ -86,10 +96,10 @@ def index_employee(department_id):
         error = delete_employee_by_id(employee_id)
         if error is not None:
             employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
-            return render_template('employees.html', employees=employees, department=dep, error = error)
+            return render_template('employees.html', employees=employees, department=dep, error=error)
 
     employees = Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
-    return render_template('employees.html', employees=employees, department=dep, error = '')
+    return render_template('employees.html', employees=employees, department=dep, error='')
 
 
 @app.route('/add-employee/<int:department_id>', methods=['POST', 'GET'])
@@ -138,7 +148,6 @@ def edit_employee(employee_id):
     else:
         return render_template('employee.html', employee=emp_to_edit, department_name=dep.name, department_id=dep.id,
                                error='')
-
 
 
 if __name__ == "__main__":

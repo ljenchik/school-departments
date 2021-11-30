@@ -32,13 +32,13 @@ def create_department_or_error(name:str) -> str:
         return (error, None)
 
 
-
 def get_department_by_id(id: int) -> Department:
     department = Department.query.get(id)
     return department
 
 
-def update_department(department, name):
+def update_department(department_id: int, name: str):
+    department = get_department_by_id(department_id)
     department.name = name
     if name.strip() == '':
         return 'Please enter department name'
