@@ -1,13 +1,13 @@
 from service.department_service import read_departments_with_salaries, create_department_or_error, get_department_by_id, \
     update_department, delete_department_by_id
 
-from flask_restful import Api, Resource, fields, marshal_with, reqparse
+from flask_restful import Resource, fields, marshal_with, reqparse
 
 from flask import Blueprint
 
 account_api = Blueprint('account_api', __name__)
 
-department_put_args = reqparse.RequestParser()
+department_put_args:reqparse.RequestParser = reqparse.RequestParser()
 department_put_args.add_argument('name', type = str, required=True, help='Name of department')
 
 department_with_salary_fields = {
@@ -45,14 +45,13 @@ class Department(Resource):
     def get(self, department_id):
         return get_department_by_id(department_id)
 
-    @marshal_with(department_fields)
+    @marshal_with(department_fields)            # serialization of the returned object from this method (returns department with 3 fields in the form of dictionary)
     def put(self, department_id: int):
-        args = department_put_args.parse_args()
-        error = update_department(department_id, args.name)
-        if error is not None:
-            return {'error' : error}, 500
-
-        return get_department_by_id(department_id), 201
+        args:dict = department_put_args.parse_args()                 # get the name of the department from the request body
+        error, department = update_department(department_id, args['name'])     # tries to save to db and returns error (empty name or duplicate) if unsuccesful
+        if error is not None:                                   # if there is an error the function returns dictionary with error
+            return {'error' : error}, 500                       # 500 is http response code which means server failed
+        return department, 202                                  # if there is no error the function returns updated department
 
 
 

@@ -37,15 +37,20 @@ def get_department_by_id(id: int) -> Department:
     return department
 
 
-def update_department(department_id: int, name: str):
-    department = get_department_by_id(department_id)
+def update_department(department_id: int, name: str) -> (str, Department):
+    department:Department = get_department_by_id(department_id)
     department.name = name
     if name.strip() == '':
-        return 'Please enter department name'
+        return ('Please enter department name', None)
     try:
         db.session.commit()
-    except:
-        return 'There is an issue with editing this department'
+        return (None, department)
+    except Exception as e:
+        db.session.rollback()
+        error:str = str(e)
+        if 'Duplicate' in error:
+            error = 'Department with this name already exists'
+        return (error, None)
 
 
 def delete_department_by_id(id: int):

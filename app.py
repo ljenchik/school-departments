@@ -1,5 +1,4 @@
 from datetime import datetime
-
 import flask
 import requests
 from flask import Flask, render_template, request, redirect
@@ -8,14 +7,8 @@ from werkzeug.exceptions import abort
 from models.department import Department
 from models.db_shared import db
 from models.employee import Employee
-
 from rest_api import DepartmentWithSalary, Department
-
-from service.department_service import get_department_by_id, update_department
-
-from service.employee_service import create_employee_or_error, update_employee, validate_employee, parse_float, \
-    delete_employee_by_id
-
+from service.employee_service import create_employee_or_error, update_employee, validate_employee, parse_float, delete_employee_by_id
 from flask_restful import Api
 
 app = Flask(__name__)
@@ -33,12 +26,10 @@ def index_department():
     if request.method == 'POST':
         department_id = request.form['id']
         error_dict = requests.delete(flask.request.url_root + f'api/department/{department_id}').json()
-
         if len(error_dict) != 0:
             error_text = error_dict['error']
             departments = requests.get(flask.request.url_root + 'api/department')
             return render_template('departments.html', departments=departments, error=error_text)
-
     departments = requests.get(flask.request.url_root + 'api/department').json()
     return render_template('departments.html', departments=departments, error='')
 
@@ -67,24 +58,32 @@ def get_or_404(model):
         abort(404)
     return model
 
-
+# Python decorator that Flask provides,
+# if user goes to /department/edit/<int:id> the edit_department(id) function must be ecxecuted
 @app.route('/department/edit/<int:id>', methods=['GET', 'POST'])
-def edit_department(id):
+def edit_department(id:int):
     if request.method == 'POST':
-        dep_to_edit_name = request.form['name']
-        dict_dep_to_edit = {'name' : dep_to_edit_name}
-        error_or_department = requests.put(flask.request.url_root + f'api/department/{id}',
+        dep_to_edit_newname = request.form['name']             # request form from template department.html and input a new department name
+        dict_dep_to_edit:dict = {'name' : dep_to_edit_newname}      # dictionary is needed for json
+        # Makes request to rest api to upload the department to be edited by its id
+        error_or_department:dict = requests.put(flask.request.url_root + f'api/department/{id}',         # serializes class to dictionary
                                     data=dict_dep_to_edit).json()
         if 'error' in error_or_department:
-            error_text = error_or_department['error']
+            error_text:str = error_or_department['error']
             if error_text is not None:
-                dep_to_edit = {'name': dep_to_edit_name, 'id': id}
+                dep_to_edit = {'name': dep_to_edit_newname, 'id': id}
+                # Render department edit template with error_text displayed in red rectangle
                 return render_template('department.html', dep=dep_to_edit,
                                    error=error_text)
-        return redirect('/')
+        return redirect('/')                            # redirects the user to the root, list of all departments
     else:
-        new_department = requests.get(flask.request.url_root + f'api/department/{id}').json()
-        return render_template('department.html', dep=new_department, error='')
+        # When user clicks on edit, we display an edit department form from 'department.html'
+        # template with the current department name
+        # Makes request to rest api to load the department by id
+        department_to_edit:dict = requests.get(flask.request.url_root + f'api/department/{id}').json()
+        # Render department edit template, error is an empty line because
+        # otherwise red error rectangle will be displayed
+        return render_template('department.html', dep=department_to_edit, error='')
 
 
 
