@@ -22,14 +22,14 @@ def create_department_or_error(name:str) -> str:
     new_department = Department(name = name)
     try:
         db.session.add(new_department)
-        db.session.commit()
+        db.session.commit()                     # saves to db
         return (None, new_department)
     except Exception as e:
         db.session.rollback()
-        error = str(e)
-        if 'Duplicate' in error:
+        error = str(e)                          # exception string from Python
+        if 'Duplicate' in error:                # checks if department with the same name exists (unique in db)
             error = 'Department with this name already exists'
-        return (error, None)
+        return (error, None)                    # returns tuple (error, department)
 
 
 def get_department_by_id(id: int) -> Department:
@@ -52,12 +52,12 @@ def update_department(department_id: int, name: str) -> (str, Department):
             error = 'Department with this name already exists'
         return (error, None)
 
-
+# returns error or None
 def delete_department_by_id(id: int):
     dep_to_delete = get_department_by_id(id)
     try:
-        db.session.delete(dep_to_delete)
-        db.session.commit()
+        db.session.delete(dep_to_delete)        # deletes from db
+        db.session.commit()                     # saves changes to db
     except:
         db.session.rollback()
-        return 'You cannot delete department with employees'
+        return 'You cannot delete department with employees'        # returns error if department has employees

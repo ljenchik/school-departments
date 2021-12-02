@@ -4,13 +4,24 @@ from models.db_shared import db
 from models.employee import Employee
 
 
-def create_employee_or_error(new_employee: Employee):
+def create_employee_or_error(args: dict) -> (str, Employee):
+    new_employee = Employee(
+        # name=args['name'],
+        # role=args['role'],
+        # date_of_birth=args['date_of_birth'],
+        # salary=args['salary'],
+        # start_date=args['start_date'],
+        # department_id=args['department_id']
+        **args
+    )
+
     try:
         db.session.add(new_employee)
         db.session.commit()
+        return None, new_employee
     except Exception as e:
         db.session.rollback()
-        return 'There was an issue adding a new employee ' + str(e)
+        return 'There was an issue adding a new employee ' + str(e), None
 
 
 def update_employee(employee: Employee, name: str, role, date_of_birth, salary, start_date):
