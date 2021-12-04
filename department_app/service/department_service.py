@@ -1,6 +1,6 @@
-from models.db_shared import db
-from models.department import Department
-from models.department_avg_salary import DepartmentAvgSalary
+from department_app import db
+from department_app.models.department import Department
+from department_app.models.department_avg_salary import DepartmentAvgSalary
 
 
 def read_departments_with_salaries() -> list:

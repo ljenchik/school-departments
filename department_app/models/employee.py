@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey
-from models.db_shared import db
+from department_app import db
 from datetime import datetime
-from models.department import Department
+from .department import Department
 
 
 class Employee(db.Model):
