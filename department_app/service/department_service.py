@@ -18,7 +18,7 @@ def read_departments_with_salaries() -> list:
     return departments
 
 
-def create_department_or_error(name:str) -> str:
+def create_department_or_error(name:str) -> (str, Department):
     new_department = Department(name = name)
     try:
         db.session.add(new_department)

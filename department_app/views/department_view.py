@@ -16,7 +16,7 @@ def get_department_by_id(department_id: Union[str, int]) -> dict:
         abort(response.status_code)  # raise exception
 
 
-# if user goes to the url / function will be executed
+# if user goes to the url '/' function will be executed
 @app.route('/')
 def index_department():
     departments = requests.get(flask.request.url_root + 'api/departments').json()
@@ -34,7 +34,7 @@ def delete_department():
     error_dict: dict = requests.delete(flask.request.url_root + f'api/departments/{department_id}').json()
     if len(error_dict) != 0:
         error_text: str = error_dict['error']
-    departments = requests.get(flask.request.url_root + 'api/departments').json()
+    departments = requests.get(flask.request.url._root + 'api/departments').json()
     # renders templates from departments.html
     return render_template('departments.html', departments=departments, error=error_text)
 
@@ -44,10 +44,10 @@ def delete_department():
 def add_department():
     if request.method == 'POST':
         # requests form from template department.html and enter a new department name
-        department_name = request.form['name']
-        dict_department_name = {'name': department_name}
+        department_name: str = request.form['department_name']
+        dict_department_name: dict = {'name': department_name}
         # Makes request to rest api to add new department
-        error_or_department = requests.post(flask.request.url_root + f'api/departments',
+        error_or_department: dict = requests.post(flask.request.url_root + f'api/departments',
                                             data=dict_department_name).json()  # serializes class to dictionary
         if 'error' in error_or_department:
             error_text = error_or_department['error']

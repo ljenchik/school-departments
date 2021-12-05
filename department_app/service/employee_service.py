@@ -3,6 +3,8 @@ from datetime import datetime
 from department_app import db
 from department_app.models.employee import Employee
 
+def get_employees_by_department_id(department_id:int):
+    return Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
 
 def create_employee_or_error(args: dict) -> (str, Employee):
     new_employee:Employee = Employee(
@@ -44,16 +46,17 @@ def update_employee(employee: Employee, name: str, role, date_of_birth, salary, 
 
 
 def validate_employee(emp: dict) -> str:
-    if emp['start_date'].years - emp['date_of_birth'].years < 18:
+    start_date:datetime = emp['start_date']
+    dob:datetime  = emp['date_of_birth']
+    if start_date.year - dob.year < 18:
         return 'Employee must be at least 18 to start work'
-    if datetime.today().year - emp['date_of_birth'].year > 100:
+    if datetime.today().year - dob.year > 100:
         return "Please check employee's date of birth"
-    if emp['date_of_birth'] >= datetime.today():
+    if dob >= datetime.today():
         return "Please check employee's date of birth"
 
 
-def parse_float(value):
-    return float((value).replace(" ", "").replace(",", ""))
+
 
 
 def delete_employee_by_id(employee_id):
@@ -64,3 +67,4 @@ def delete_employee_by_id(employee_id):
     except:
         db.session.rollback()
         return 'There was an issue deleting this employee'
+

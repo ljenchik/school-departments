@@ -18,7 +18,7 @@
                 <div class="p-10 m-0 w-100">
                     <p class="p-10 m-0"><a href="/department/{{dep.id}}/employees">{{ dep.name }}</a></p>
                     {% if dep.avg_salary != None %}
-                    <p class="p-10 m-0">avg salary: £ {{dep.avg_salary}}</p>{% endif %}
+                    <p class="p-10 m-0">average salary: £ {{dep.avg_salary}}</p>{% endif %}
                 </div>
                 <input type="hidden" type="text" name="id" value="{{dep.id}}">
                 <a class="btn btn-light" href="/department/edit/{{ dep.id }}" role="button">Edit</a>
