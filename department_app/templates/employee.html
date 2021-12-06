@@ -13,6 +13,7 @@
     {% if employee.id == None %}
     <form action="/add-employee/{{department_id}}" method="POST">{% else %}
         <form action="/edit-employee/{{employee.id}}" method="POST">{% endif %}
+            <input type="hidden" name="department_id" value="{{ employee.department_id }}">
             <div class="form-group">
                 <label>Employee's name</label>
                 <input class="form-control" type="text" pattern="[A-Za-z\W]+" id="name" name="name" placeholder="Enter name"
@@ -30,7 +31,7 @@
                        required="">
                 {%else%}
                 <input class="form-control" type="date" name="birthdate" placeholder="Enter date of birth"
-                       value="{{employee.date_of_birth.strftime('%Y-%m-%d')}}" required="">
+                       value="{{employee.date_of_birth}}" required="">
                 {% endif%}
             </div>
             <div class="form-group"><label>Employee's salary</label>
@@ -39,7 +40,7 @@
             </div>
             <div class="form-group"><label>Employee's start date</label>
                 <input class="form-control" type="date" name="start_date" placeholder="Enter start date"
-                       value="{{employee.start_date.strftime('%Y-%m-%d')}}" required="">
+                       value="{{employee.start_date}}" required="">
             </div>
             {% if error != '' %}
             <div class="alert alert-danger">

@@ -34,7 +34,7 @@ def delete_department():
     error_dict: dict = requests.delete(flask.request.url_root + f'api/departments/{department_id}').json()
     if len(error_dict) != 0:
         error_text: str = error_dict['error']
-    departments = requests.get(flask.request.url._root + 'api/departments').json()
+    departments = requests.get(flask.request.url_root + 'api/departments').json()
     # renders templates from departments.html
     return render_template('departments.html', departments=departments, error=error_text)
 
