@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Date of birth search</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="jumbotron text-center">
+    <h1>Search employee</h1>
+    <p>by date of birth</p>
+</div>
+
+<div class="container">
+    <fieldset class="form-group">
+        <div class="row">
+            <div class="col-sm-10">
+                <div class="form-check">
+                    <input checked class="form-check-input" id="gridRadios1" name="gridRadios" type="radio">
+                    <label class="form-check-label" for="gridRadios1">Date of birth</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" id="gridRadios2" name="gridRadios" type="radio">
+                    <label class="form-check-label" for="gridRadios2">Period</label>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+
+    <form>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="inputdate1">Date of birth / from</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="inputdate1" placeholder="dd/mm/yyyy" type="date">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="inputdate2">to</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="inputdate2" placeholder="dd/mm/yyyy" type="date">
+            </div>
+        </div>
+        <div class="text-right">
+            <a class="btn float-right btn-primary mt-2" href="employee_search.html" role="button">Search
+                employee</a>
+        </div>
+    </form>
+</div>
+</body>

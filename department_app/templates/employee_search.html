@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Search employee</title>
+{% endblock %}
+
+{% block body %}
+<div class="jumbotron text-center">
+    <h1>Search employee</h1>
+    <p>by date of birth</p>
+</div>
+
+
+<div class="container">
+    <form action="/search-employee" method="GET">
+<!--        <input checked class="form-check-input" id="gridRadios1" name="date1" type="radio">-->
+<!--        <input checked class="form-check-input" id="gridRadios2" name="date2" type="radio">-->
+        <div class="form-group">
+            <label>Date of birth</label>
+            <input class="form-control" name="dob" placeholder="dd/mm/yyyy" required="" type="date" value="{{date_of_birth}}">
+        </div>
+<!--        <div class="form-group">-->
+<!--            <label>From</label>-->
+<!--            <input class="form-control" name="date1" placeholder="dd/mm/yyyy" required="" type="date">-->
+<!--            <label>to</label>-->
+<!--            <input class="form-control" name="date2" placeholder="dd/mm/yyyy" required="" type="date">-->
+<!--        </div>-->
+        <div class="text-right">
+            <button class="btn float-right btn-primary mt-2" role="button" type="submit">Search employee</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

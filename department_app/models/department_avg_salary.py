@@ -1,3 +1,10 @@
+"""
+Department model used to represent departments with average salaries, this module defines the
+following classes:
+- `DepartmentAvgSalary`, department model
+"""
+
+
 from department_app import db
 from datetime import datetime
 
@@ -10,4 +17,4 @@ class DepartmentAvgSalary(db.Model):
     __tablename__ = 'Department_Avg_Salary_ignore'
 
     def __repr__(self):
-        return '<Department_avg_salary %r>' % self.id
+        return f'<Department_avg_salary {self.id}'

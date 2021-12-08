@@ -49,14 +49,18 @@ def add_employee_post(department_id: str):
     new_employee['department_id'] = int(department_id)
     response = requests.post(
         flask.request.url_root + f'/api/department/{department_id}/employee',
-        data=new_employee)
+        data=new_employee
+    )
     if response.status_code == 200:
         return redirect(f'/department/{department_id}/employees')
 
     error_text = f'REST API Error. Response code: {response.status_code}. {response.text}'
-    error_or_employee: dict = response.json()
-    if 'error' in error_or_employee:
-        error_text = error_or_employee['error']
+    try:
+        error_or_employee: dict = response.json()
+        if 'error' in error_or_employee:
+            error_text = error_or_employee['error']
+    except JSONDecodeError:
+        pass
 
     new_employee['id'] = None
     return render_template('employee.html', employee=new_employee, department_name=dep['name'],
@@ -64,7 +68,7 @@ def add_employee_post(department_id: str):
 
 
 @app.route('/add-employee/<int:department_id>')
-def add_employee_get(department_id):
+def add_employee_get(department_id:str):
     new_employee: dict = {"name": '', 'id': None, 'role': '',
                           'date_of_birth': None, 'salary': '', 'start_date': datetime.today().strftime('%Y-%m-%d')}
     dep: dict = get_department_by_id(department_id)
@@ -93,11 +97,13 @@ def edit_employee_put(employee_id):
     if response.status_code == 200:
         return redirect(f'/department/{department_id}/employees')
 
+    error_text = f'REST API status code: {response.status_code}. Message: {response.text}'
     try:
         error_or_employee: dict = response.json()
-        error_text: str = error_or_employee['error']
+        if 'error' in error_or_employee:
+            error_text: str = error_or_employee['error']
     except JSONDecodeError:
-        error_text = f'REST API status code: {response.status_code}. Message: {response.text}'
+        pass
 
     dep: dict = get_department_by_id(department_id)
     return render_template('employee.html', employee=employee_to_edit, department_name=dep['name'],
