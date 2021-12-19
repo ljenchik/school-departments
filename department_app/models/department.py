@@ -21,10 +21,6 @@ class Department(db.Model):
     #: Date when the department was created
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __init__(self, name):
-        #: Name of the department
-        self.name = name
-
     def __repr__(self):
         """
         Returns string representation of department

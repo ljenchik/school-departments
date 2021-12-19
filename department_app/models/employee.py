@@ -35,29 +35,10 @@ class Employee(db.Model):
     role = db.Column(db.String(100))
     #: employee's date of birth
     date_of_birth = db.Column(db.DateTime)
-    #: employee's salry
+    #: employee's salary
     salary = db.Column(db.Float)
     #: employee's start date
     start_date = db.Column(db.DateTime)
-
-    def __init__(self, name, role,  date_of_birth, salary, start_date, department=None):
-        #: employee's name
-        self.name = name
-
-        #: employee's role
-        self.role = role
-
-        #: employee's date of birth
-        self.date_of_birth = date_of_birth
-
-        #: employee's salary
-        self.salary = salary
-
-        #: employee's start_date
-        self.start_date = start_date
-
-        #: department employee works in
-        self.department = department
 
     def __repr__(self):
         """

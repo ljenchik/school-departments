@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from department_app import db
 from department_app.models.employee import Employee
 
@@ -9,13 +10,7 @@ def get_employees_by_department_id(department_id: int):
 
 def create_employee_or_error(args: dict) -> (str, Employee):
     new_employee: Employee = Employee(
-        name=args['name'],
-        role=args['role'],
-        date_of_birth=args['date_of_birth'],
-        salary=args['salary'],
-        start_date=args['start_date'],
-        department_id=args['department_id']
-       # **args
+        **args
     )
     error = validate_employee(args)
     if error is not None:
@@ -77,5 +72,11 @@ def get_employee_by_id(employee_id: int) -> Employee:
 
 
 def get_employee_by_dob(dob: str) -> list:
-    employee_list = Employee.query.filter_by(date_of_birth = dob).all()
+    employee_list = Employee.query.filter_by(date_of_birth=dob).all()
+    return employee_list
+
+
+def get_employee_by_period(date_from: str, date_to: str) -> list:
+    employee_list = Employee.query.filter(Employee.date_of_birth <= date_to,
+                                          Employee.date_of_birth >= date_from).all()
     return employee_list
