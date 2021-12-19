@@ -12,23 +12,64 @@
 
 
 <div class="container">
+    <div class="p-3"><a href="/" role="button">&lt; &lt; Back to Departments</a></div>
     <form action="/search-employee" method="GET">
-<!--        <input checked class="form-check-input" id="gridRadios1" name="date1" type="radio">-->
-<!--        <input checked class="form-check-input" id="gridRadios2" name="date2" type="radio">-->
+        <!--        <input checked class="form-check-input" id="gridRadios1" name="date1" type="radio">-->
+        <!--        <input checked class="form-check-input" id="gridRadios2" name="date2" type="radio">-->
         <div class="form-group">
             <label>Date of birth</label>
-            <input class="form-control" name="dob" placeholder="dd/mm/yyyy" required="" type="date" value="{{date_of_birth}}">
+            <input class="form-control" name="dob" placeholder="dd/mm/yyyy" required="" type="date"
+                   value="{{date_of_birth}}">
         </div>
-<!--        <div class="form-group">-->
-<!--            <label>From</label>-->
-<!--            <input class="form-control" name="date1" placeholder="dd/mm/yyyy" required="" type="date">-->
-<!--            <label>to</label>-->
-<!--            <input class="form-control" name="date2" placeholder="dd/mm/yyyy" required="" type="date">-->
-<!--        </div>-->
+        <!--        <div class="form-group">-->
+        <!--            <label>From</label>-->
+        <!--            <input class="form-control" name="date1" placeholder="dd/mm/yyyy" required="" type="date">-->
+        <!--            <label>to</label>-->
+        <!--            <input class="form-control" name="date2" placeholder="dd/mm/yyyy" required="" type="date">-->
+        <!--        </div>-->
         <div class="text-right">
             <button class="btn float-right btn-primary mt-2" role="button" type="submit">Search employee</button>
         </div>
     </form>
+</div>
+
+<div class="container">
+    {% if employees is not none %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Department</th>
+            <th scope="col">Role</th>
+            <th scope="col">Date of birth</th>
+            <th scope="col">Salary</th>
+            <th scope="col">Start date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for emp in employees %}
+        <tr>
+            <td>
+                <p>{{ emp.name }}</p>
+            </td>
+            <td>
+                <p>{{ emp.role }}</p>
+            </td>
+            <td>
+                <p>{{ emp.date_of_birth }}</p>
+            </td>
+            <td>
+                <p>{{ emp.salary }}</p>
+            </td>
+            <td>
+                <p>{{ emp.start_date }}</p>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
 </div>
 
 {% endblock %}

@@ -3,10 +3,7 @@ from datetime import datetime
 from flask_restful import Resource, fields, marshal_with, reqparse
 
 from department_app.service.employee_service import create_employee_or_error, get_employees_by_department_id, \
-    delete_employee_by_id, get_employee_by_id, update_employee_or_error
-
-department_put_args: reqparse.RequestParser = reqparse.RequestParser()
-department_put_args.add_argument('name', type=str, required=True, help='Name of department')
+    delete_employee_by_id, get_employee_by_id, update_employee_or_error, get_employee_by_dob
 
 employee_parse_args: reqparse.RequestParser = reqparse.RequestParser()
 employee_parse_args.add_argument('name', type=str, required=True, help="Employee's name")
@@ -18,6 +15,8 @@ employee_parse_args.add_argument('department_id', type=int, required=True, help=
 employee_parse_args.add_argument('start_date', type=lambda x: datetime.strptime(x,'%Y-%m-%d'),
                                  required=True, help='Start date')
 
+searchemployee_parse_args: reqparse.RequestParser = reqparse.RequestParser()
+searchemployee_parse_args.add_argument('date_of_birth', type=lambda x: datetime.strptime(x,'%Y-%m-%d'))
 
 class IsoDateFormat(fields.Raw):
     def format(self, value):
@@ -76,3 +75,10 @@ class DepartmentEmployee(Resource):
         if error is not None:
             return {'error': error}, 500
         return employee
+
+
+class SearchEmployee(Resource):
+    @marshal_with(employee_fields)  # serialization of the returned object to json()
+    def get(self):
+        args: dict = searchemployee_parse_args.parse_args()
+        return get_employee_by_dob(args['date_of_birth'])

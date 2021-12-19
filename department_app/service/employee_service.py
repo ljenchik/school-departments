@@ -9,13 +9,13 @@ def get_employees_by_department_id(department_id: int):
 
 def create_employee_or_error(args: dict) -> (str, Employee):
     new_employee: Employee = Employee(
-        # name=args['name'],
-        # role=args['role'],
-        # date_of_birth=args['date_of_birth'],
-        # salary=args['salary'],
-        # start_date=args['start_date'],
-        # department_id=args['department_id']
-        **args
+        name=args['name'],
+        role=args['role'],
+        date_of_birth=args['date_of_birth'],
+        salary=args['salary'],
+        start_date=args['start_date'],
+        department_id=args['department_id']
+       # **args
     )
     error = validate_employee(args)
     if error is not None:
@@ -74,3 +74,8 @@ def delete_employee_by_id(employee_id):
 def get_employee_by_id(employee_id: int) -> Employee:
     employee_to_edit = Employee.query.get(employee_id)
     return employee_to_edit
+
+
+def get_employee_by_dob(dob: str) -> list:
+    employee_list = Employee.query.filter_by(date_of_birth = dob).all()
+    return employee_list
