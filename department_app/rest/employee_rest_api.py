@@ -79,8 +79,11 @@ class DepartmentEmployee(Resource):
         return employee
 
 
+employee_dep_name_fields = employee_fields.copy()
+employee_dep_name_fields['department_name'] = fields.String
+
 class SearchEmployee(Resource):
-    @marshal_with(employee_fields)  # serialization of the returned object to json()
+    @marshal_with(employee_dep_name_fields)  # serialization of the returned object to json()
     def get(self):
         args: dict = searchemployee_parse_args.parse_args()
         if args['date_of_birth'] is not None:
