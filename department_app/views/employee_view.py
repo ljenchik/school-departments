@@ -18,8 +18,17 @@ def get_url(url: str):
 def index_employee(department_id: str):
     dep = get_department_by_id(department_id)
     # get employees by department id
+    search_or_department = 'Departments'
+    reffer = request.referrer
+    if reffer is None:
+        reffer = '/'
+
+    if 'search-employee' in reffer:
+        search_or_department = 'Search'
+
     employees: list = requests.get(get_url(f'/api/department/{department_id}/employee')).json()
-    return render_template('employees.html', employees=employees, department=dep, error='')
+    return render_template('employees.html', employees=employees, department=dep, error='',
+                           reffer = reffer, backlink_name = search_or_department)
 
 
 # deletes employee
