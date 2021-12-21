@@ -1,5 +1,6 @@
-from department_app import db
 from datetime import datetime
+
+from department_app import db
 
 
 class EmployeeDepName(db.Model):
@@ -15,4 +16,4 @@ class EmployeeDepName(db.Model):
     __tablename__ = 'Employee_with_department_name_ignore'
 
     def __repr__(self):
-        return f'<Employee_with_department_name>'
+        return f'<Employee_with_department_name {id}>'

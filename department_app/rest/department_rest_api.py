@@ -33,8 +33,7 @@ class DepartmentWithSalary(Resource):
         error, new_department = create_department_or_error(args['name'])
         if error is not None:
             return {'error': error, 'name': args['name']}, 500
-        else:
-            return new_department
+        return new_department
 
 
 class Department(Resource):
@@ -56,5 +55,4 @@ class Department(Resource):
         error = delete_department_by_id(department_id)
         if error is not None:
             return {'error': error}, 500
-        else:
-            return {}
+        return {}

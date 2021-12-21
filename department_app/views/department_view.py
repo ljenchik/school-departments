@@ -12,8 +12,8 @@ def get_department_by_id(department_id: Union[str, int]) -> dict:
     response: requests.Response = requests.get(flask.request.url_root + f'api/departments/{department_id}')
     if response.status_code == 200:
         return response.json()
-    else:
-        abort(response.status_code)  # raise exception
+    abort(response.status_code)  # raise exception
+    return None
 
 
 # if user goes to the url '/' function will be executed
@@ -47,8 +47,8 @@ def add_department():
         department_name: str = request.form['department_name']
         dict_department_name: dict = {'name': department_name}
         # Makes request to rest api to add new department
-        error_or_department: dict = requests.post(flask.request.url_root + f'api/departments',
-                                            data=dict_department_name).json()  # serializes class to dictionary
+        error_or_department: dict = requests.post(f'{flask.request.url_root}api/departments',
+                                                  data=dict_department_name).json()  # serializes class to dictionary
         if 'error' in error_or_department:
             error_text = error_or_department['error']
             if error_text is not None:

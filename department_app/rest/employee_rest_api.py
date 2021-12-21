@@ -73,6 +73,7 @@ class DepartmentEmployee(Resource):
     @marshal_with(employee_fields)  # serialization of the returned object to json)
     def post(self, department_id):  # add employee
         args: dict = employee_parse_args.parse_args()  # returns employee dict from flask request
+        args['department_id'] = department_id
         (error, employee) = create_employee_or_error(args)
         if error is not None:
             return {'error': error}, 500

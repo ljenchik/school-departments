@@ -18,46 +18,48 @@ def read_departments_with_salaries() -> list:
     return departments
 
 
-def create_department_or_error(name:str) -> (str, Department):
-    new_department = Department(name = name)
+def create_department_or_error(name: str) -> (str, Department):
+    new_department = Department(name=name)
     try:
         db.session.add(new_department)
-        db.session.commit()                     # saves to db
+        db.session.commit()  # saves to db
         return (None, new_department)
     except Exception as e:
         db.session.rollback()
-        error = str(e)                          # exception string from Python
-        if 'Duplicate' in error:                # checks if department with the same name exists (unique in db)
+        error = str(e)  # exception string from Python
+        if 'Duplicate' in error:  # checks if department with the same name exists (unique in db)
             error = 'Department with this name already exists'
-        return (error, None)                    # returns tuple (error, department)
+        return (error, None)  # returns tuple (error, department)
 
 
-def get_department_by_id(id: int) -> Department:
-    department = Department.query.get(id)
+def get_department_by_id(department_id: int) -> Department:
+    department = Department.query.get(department_id)
     return department
 
 
 def update_department(department_id: int, name: str) -> (str, Department):
-    department:Department = get_department_by_id(department_id)
+    department: Department = get_department_by_id(department_id)
     department.name = name
     if name.strip() == '':
         return ('Please enter department name', None)
     try:
         db.session.commit()
         return (None, department)
-    except Exception as e:
+    except Exception as error:
         db.session.rollback()
-        error:str = str(e)
+        error: str = str(error)
         if 'Duplicate' in error:
             error = 'Department with this name already exists'
         return (error, None)
 
+
 # returns error or None
-def delete_department_by_id(id: int):
-    dep_to_delete = get_department_by_id(id)
+def delete_department_by_id(department_id: int):
+    dep_to_delete = get_department_by_id(department_id)
     try:
-        db.session.delete(dep_to_delete)        # deletes from db
-        db.session.commit()                     # saves changes to db
+        db.session.delete(dep_to_delete)  # deletes from db
+        db.session.commit()  # saves changes to db
+        return None
     except:
         db.session.rollback()
-        return 'You cannot delete department with employees'        # returns error if department has employees
+        return 'You cannot delete department with employees'  # returns error if department has employees
