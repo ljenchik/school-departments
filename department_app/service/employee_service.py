@@ -86,8 +86,14 @@ def get_employee_by_dob(dob: str) -> list:
 
 
 def get_employee_by_period(date_from: str, date_to: str) -> list:
-    employee_list = Employee.query.filter(Employee.date_of_birth <= date_to,
-                                          Employee.date_of_birth >= date_from).all()
+    employee_list = EmployeeDepName.query.from_statement(
+        db.text(f"""
+            SELECT e.name, e.role, e.date_of_birth, e.salary, 
+            e.start_date, e.department_id, e.id, d.name as department_name 
+            FROM employee e
+            INNER JOIN department d 
+            ON e.department_id = d.id
+            WHERE date_of_birth >= '{date_from}' and date_of_birth <= '{date_to}'
+            """)).all()
     return employee_list
-
 

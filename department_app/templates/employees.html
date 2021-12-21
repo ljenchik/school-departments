@@ -12,6 +12,7 @@
 
 <div class="container">
     <div class="p-3"><a href="/" role="button">&lt; &lt; Back to Departments</a></div>
+
     <table class="table table-striped">
         <thead>
         <tr>
@@ -44,7 +45,7 @@
             </td>
             <td>
                 <form method="POST">
-                    <input name="id"  type="hidden" value="{{emp.id}}">
+                    <input name="id" type="hidden" value="{{emp.id}}">
                     <a class="btn btn-light" href="/edit-employee/{{ emp.id }}" role="button">Edit</a>
                     <button class="btn btn-secondary" type="submit">Delete</button>
                 </form>
