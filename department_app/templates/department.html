@@ -4,11 +4,14 @@
 <title>Add or Edit Department</title>
 {% endblock %}
 
-{% block body %}
-<div class="jumbotron text-center">
+{% block page_header %}
+<div class="jumbotron text-center mb-0">
     <h1>Departments</h1>
     <p>of Brentwood Ursuline Convent High School for girls</p>
 </div>
+{% endblock %}
+
+{% block body %}
 <div class="container">
     {% if dep.id == None %}
     <form action="/department/add" method="POST">

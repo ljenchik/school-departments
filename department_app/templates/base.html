@@ -7,6 +7,27 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-    {% block body %}{% endblock %}
+{%block page_header %} {%endblock%}
+<div style="background-color:#e9ecef">
+    <div class="container mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+            <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+                    data-target="#navbarNav" data-toggle="collapse" type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Departments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search-employee">Search</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+{% block body %}{% endblock %}
 </body>
 </html>

@@ -4,11 +4,14 @@
 <title>Add or Edit Employee</title>
 {% endblock %}
 
-{% block body %}
-<div class="jumbotron text-center">
+{% block page_header %}
+<div class="jumbotron text-center mb-0">
     <h1>Employee</h1>
     <p>{{department_name}}</p>
 </div>
+{% endblock %}
+
+{% block body %}
 <div class="container">
     {% if employee.id == None %}
     <form action="/add-employee/{{department_id}}" method="POST">{% else %}

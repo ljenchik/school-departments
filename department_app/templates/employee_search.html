@@ -4,15 +4,15 @@
 <title>Search employee</title>
 {% endblock %}
 
-{% block body %}
-<div class="jumbotron text-center">
+{% block page_header %}
+<div class="jumbotron text-center mb-0">
     <h1>Search employee</h1>
     <p>by date of birth</p>
 </div>
+{% endblock %}
 
-
+{% block body %}
 <div class="container">
-    <div class="p-1"><a href="/" role="button">&lt; &lt; Back to Departments</a></div>
     <div class="row">
         <div class="col-md-8 bg-faded">
             <form action="/search-employee" class="form-inline d-flex flex-nowrap " method="get">
