@@ -1,3 +1,4 @@
+# pylint: disable=cyclic-import
 from datetime import datetime
 from json import JSONDecodeError
 
@@ -44,8 +45,7 @@ def get_department_by_id(department_id: str) -> dict:
     response = requests.get(flask.request.url_root + f'api/departments/{department_id}')
     if response.status_code == 200:
         return response.json()
-    else:
-        abort(response.status_code)  # raise exception
+    abort(response.status_code)  # raise exception
 
 
 @app.route('/add-employee/<int:department_id>', methods=['POST'])
@@ -120,8 +120,7 @@ def get_employee_by_id(employee_id: str) -> dict:
     response = requests.get(flask.request.url_root + f'api/employee/{employee_id}')
     if response.status_code == 200:
         return response.json()
-    else:
-        abort(response.status_code)  # raise exception
+    abort(response.status_code)  # raise exception
 
 
 @app.route('/edit-employee/<int:employee_id>')

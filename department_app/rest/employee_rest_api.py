@@ -1,3 +1,11 @@
+"""
+Employee REST API, this module defines the following classes:
+- `IsoDateFormat`, formatting dates
+- `Employee`, employee API class
+- `DepartmentEmployee`, employee with department id  API class
+- `SearchEmployee`, employee search API class
+"""
+
 from datetime import datetime
 
 from flask_restful import Resource, fields, marshal_with, reqparse
@@ -20,7 +28,12 @@ searchemployee_parse_args.add_argument('date_of_birth', type=lambda x: datetime.
 searchemployee_parse_args.add_argument('date_from', type=lambda x: datetime.strptime(x,'%Y-%m-%d'))
 searchemployee_parse_args.add_argument('date_to', type=lambda x: datetime.strptime(x,'%Y-%m-%d'))
 
+
 class IsoDateFormat(fields.Raw):
+    """
+        Employee API class
+    """
+
     def format(self, value):
         return value.strftime('%Y-%m-%d')
 
@@ -43,14 +56,13 @@ class Employee(Resource):
         employee_to_edit: dict = get_employee_by_id(employee_id)
         return employee_to_edit
 
-
+    # deletes employee
     @marshal_with(employee_fields)
     def delete(self, employee_id):
         error: str = delete_employee_by_id(employee_id)
         if error is not None:
             return {'error': error}, 500
-        else:
-            return {}
+        return {}
 
 
     #updates employee

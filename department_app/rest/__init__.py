@@ -1,3 +1,10 @@
+"""
+This package contains modules defining department and employee REST APIs and
+functions to initialize respective API endpoints:
+Modules:
+- `department_rest_api.py`: defines model representing departments
+- `employee_rest_api.py`: defines model representing employees
+"""
 from flask_restful import Api
 
 from department_app import app

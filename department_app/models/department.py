@@ -4,15 +4,16 @@ following classes:
 - `Department`, department model
 """
 
-from department_app import db
 from datetime import datetime
+
+from department_app import db
 
 
 class Department(db.Model):
     """
         Model representing department
-        :param str name: name of the department
-        """
+        :param str department name: name of the department
+    """
 
     #: Database id of the department
     id = db.Column(db.Integer, primary_key=True)
@@ -26,5 +27,3 @@ class Department(db.Model):
         Returns string representation of department
         """
         return f'Department({self.name}, {self.id})'
-
-

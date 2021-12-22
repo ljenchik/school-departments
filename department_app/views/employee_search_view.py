@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import flask
 import requests
 from flask import render_template, request
