@@ -87,8 +87,8 @@ class Department(Resource):
         """
         args: dict = department_request_parser.parse_args()  # get the name of the department
         # from the request body
-        error, department = update_department(department_id, args[
-            'name'])  # tries to save to db and returns error (empty name or duplicate) if unsuccessful
+        error, department = update_department(department_id, args['name'])
+        # tries to save to db and returns error (empty name or duplicate) if unsuccessful
         if error is not None:  # if there is an error the function returns dictionary with error
             return {'error': error}, 500  # 500 is http response code which means server failed
         return department, 202  # if there is no error the function returns updated department

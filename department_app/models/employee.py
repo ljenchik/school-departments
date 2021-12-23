@@ -15,12 +15,12 @@ from .department import Department
 class Employee(db.Model):
     """
        Model representing employee
-       :param str name: employee's name
-       :param str role: employee's role
-       :param date date_of_birth: employee's date of birth
-       :param float salary: employee's salary
-       :param start_date: date when employee started work
-       :type department: Department or None
+       :param str 'name': employee's name
+       :param str 'role': employee's role
+       :param date 'date_of_birth': employee's date of birth
+       :param float 'salary': employee's salary
+       :param date 'start_date': date when employee started work
+       :type 'department': Department or None
 
        """
     #: employee's database id

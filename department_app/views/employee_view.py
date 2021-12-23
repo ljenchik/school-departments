@@ -19,7 +19,7 @@ def get_url(url: str):
 def index_employee(department_id: str):
     dep = get_department_by_id(department_id)
     # get employees by department id
-    search_or_department = 'Departments'
+    # search_or_department = 'Departments'
     reffer = request.referrer
     if 'search-employee' not in reffer:
         reffer = None
@@ -37,7 +37,8 @@ def delete_employee(department_id: str):
     error_dict: dict = requests.delete(get_url(f'/api/employee/{employee_id}')).json()
     if len(error_dict) != 0:
         employees = requests.get(get_url(f'/api/department/{department_id}/employee')).json()
-        return render_template('employees.html', employees=employees, department=dep, error=error_dict)
+        return render_template('employees.html', employees=employees, department=dep,
+                               error=error_dict)
     return redirect(f'/department/{department_id}/employees')
 
 
@@ -76,7 +77,8 @@ def add_employee_post(department_id: str):
 @app.route('/add-employee/<int:department_id>')
 def add_employee_get(department_id:str):
     new_employee: dict = {"name": '', 'id': None, 'role': '',
-                          'date_of_birth': None, 'salary': '', 'start_date': datetime.today().strftime('%Y-%m-%d')}
+                          'date_of_birth': None, 'salary': '',
+                          'start_date': datetime.today().strftime('%Y-%m-%d')}
     dep: dict = get_department_by_id(department_id)
     return render_template('employee.html', employee=new_employee, department_name=dep['name'],
                            department_id=dep['id'], error='')
@@ -89,7 +91,8 @@ def parse_float(value):
 def fill_employee_from_request():
     new_employee = {'department_id': request.form['department_id'], 'name': request.form['name'],
                     'role': request.form['role'], 'date_of_birth': request.form['birthdate'],
-                    'salary': parse_float(request.form['salary']), 'start_date': request.form['start_date']}
+                    'salary': parse_float(request.form['salary']),
+                    'start_date': request.form['start_date']}
     return new_employee
 
 
@@ -98,7 +101,8 @@ def edit_employee_put(employee_id):
     employee_to_edit: dict = fill_employee_from_request()
     employee_to_edit['id'] = employee_id
     department_id = employee_to_edit['department_id']
-    response = requests.put(flask.request.url_root + f'/api/employee/{employee_id}', data=employee_to_edit)
+    response = requests.put(flask.request.url_root +
+                            f'/api/employee/{employee_id}', data=employee_to_edit)
 
     if response.status_code == 200:
         return redirect(f'/department/{department_id}/employees')

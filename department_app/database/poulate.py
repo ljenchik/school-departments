@@ -21,9 +21,12 @@ def populate_database():
     department_2 = Department('Department of Sciences')
     department_3 = Department('Department of Modern Foreign Languages')
 
-    employee_1 = Employee('Karen Wilbourne', 'Head of department', date(1987, 4, 12), 42000, '01/09/2016')
-    employee_2 = Employee('Mark Brown', 'Science teacher', date(1980, 2, 23), 38450, '01/09/2005')
-    employee_3 = Employee('Tracey Smith', 'Spanish teacher', date(1989, 5, 30), 37863.2, '01/09/2019')
+    employee_1 = Employee('Karen Wilbourne', 'Head of department',
+                          date(1987, 4, 12), 42000, '01/09/2016')
+    employee_2 = Employee('Mark Brown', 'Science teacher',
+                          date(1980, 2, 23), 38450, '01/09/2005')
+    employee_3 = Employee('Tracey Smith', 'Spanish teacher',
+                          date(1989, 5, 30), 37863.2, '01/09/2019')
 
     department_1.employees = [employee_1]
     department_2.employees = [employee_2]

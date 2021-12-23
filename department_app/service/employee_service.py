@@ -6,7 +6,8 @@ from department_app.models.employee_with_department_name import EmployeeDepName
 
 
 def get_employees_by_department_id(department_id: int):
-    return Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
+    return Employee.query.filter_by \
+        (department_id=department_id).order_by(Employee.date_created).all()
 
 
 def create_employee_or_error(args: dict) -> (str, Employee):
@@ -16,14 +17,13 @@ def create_employee_or_error(args: dict) -> (str, Employee):
     error = validate_employee(args)
     if error is not None:
         return error, None
-    else:
-        try:
-            db.session.add(new_employee)
-            db.session.commit()
-            return None, new_employee
-        except Exception as e:
-            db.session.rollback()
-            return 'There was an issue adding a new employee ' + str(e), None
+    try:
+        db.session.add(new_employee)
+        db.session.commit()
+        return None, new_employee
+    except Exception as error:
+        db.session.rollback()
+        return 'There was an issue adding a new employee ' + str(error), None
 
 
 def update_employee_or_error(employee_id: int, employee_dict: dict) -> (str, Employee):
@@ -41,9 +41,9 @@ def update_employee_or_error(employee_id: int, employee_dict: dict) -> (str, Emp
     try:
         db.session.commit()
         return None, employee
-    except Exception as e:
+    except Exception as error:
         db.session.rollback()
-        return 'There was an issue editing an employee: ' + str(e), None
+        return 'There was an issue editing an employee: ' + str(error), None
 
 
 def validate_employee(emp: dict) -> str:
@@ -96,4 +96,3 @@ def get_employee_by_period(date_from: str, date_to: str) -> list:
             WHERE date_of_birth >= '{date_from}' and date_of_birth <= '{date_to}'
             """)).all()
     return employee_list
-
