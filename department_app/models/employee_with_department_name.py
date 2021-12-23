@@ -1,7 +1,6 @@
 """
-Employee with department name model used to represent employees with department name they belong to,
- this module defines the following classes:
-- `EmployeeDepName`, EmployeeDepName model
+Employee with department name model represents employees with department name
+they belong to with class EmployeeDepName
 """
 from datetime import datetime
 
@@ -10,16 +9,16 @@ from department_app import db
 
 class EmployeeDepName(db.Model):
     """
-          Model representing employee
-          :param str 'name': employee's name
-          :param str 'role': employee's role
-          :param date 'date_of_birth': employee's date of birth
-          :param float 'salary': employee's salary
-          :param date 'start_date': date when employee started work
-          :param str 'department_name': department name where employee belongs to
-          :type 'department': Department or None
-
+    Model representing employee
+    :param str 'name': employee's name
+    :param str 'role': employee's role
+    :param date 'date_of_birth': employee's date of birth
+    :param float 'salary': employee's salary
+    :param date 'start_date': date when employee started work
+    :param str 'department_name': department name where employee belongs to
+    :type 'department': Department or None
     """
+    # pylint: disable=too-few-public-methods
     #: employee's database id
     id = db.Column(db.Integer, primary_key=True)
     #: employee's name

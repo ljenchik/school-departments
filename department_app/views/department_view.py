@@ -1,3 +1,6 @@
+"""
+Department Flask views
+"""
 from typing import Union
 
 import flask
@@ -9,6 +12,11 @@ from department_app import app
 
 
 def get_department_by_id(department_id: Union[str, int]) -> dict:
+    """
+    gets department by its id
+    :param department_id:
+    :return: department in JSON format or None
+    """
     response: requests.Response = requests.get(
         f'{flask.request.url_root}api/departments/{department_id}')
     if response.status_code == 200:
@@ -20,6 +28,10 @@ def get_department_by_id(department_id: Union[str, int]) -> dict:
 # if user goes to the url '/' function will be executed
 @app.route('/')
 def index_department():
+    """
+    returns rendered `departments.html` template for url route `/`
+    :return: rendered `departments.html` template
+    """
     departments = requests.get(flask.request.url_root + 'api/departments').json()
     # renders templates from departments.html
     return render_template('departments.html', departments=departments, error='')
@@ -28,6 +40,10 @@ def index_department():
 # deletes department by id and displays all departments
 @app.route('/', methods=['POST'])
 def delete_department():
+    """
+    renders templates from departments.html
+    :return: returns empty dictionary or {'error' : error_text}
+    """
     # reuse this variable for two cases: empty string as an error and error from request to rest api
     error_text: str = ''
     department_id: str = request.form['id']  # requests department id from template departments.html
@@ -44,6 +60,9 @@ def delete_department():
 # if user goes to the url /department/add the add_department() function must be executed
 @app.route('/department/add', methods=['POST', 'GET'])
 def add_department():
+    """
+    :return: returns rendered 'departments.html' template for url route '/department/add'
+    """
     if request.method == 'POST':
         # requests form from template department.html and enter a new department name
         department_name: str = request.form['department_name']
@@ -69,6 +88,12 @@ def add_department():
 # if user goes to /department/edit/<int:id> the edit_department(id) function must be executed
 @app.route('/department/edit/<int:department_id>', methods=['GET', 'POST'])
 def edit_department(department_id: int):
+    """
+    returns rendered `department.html` template for url routes
+    `/department/edit/<int:department_id>`
+    :param department_id:
+    :return:
+    """
     if request.method == 'POST':
         dep_to_edit_newname = request.form[
             'name']  # request form from template department.html and input a new department name

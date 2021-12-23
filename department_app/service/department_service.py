@@ -1,5 +1,5 @@
 """
-Department service used to make database queries
+Department service is used to make database queries
 """
 # pylint: disable=cyclic-import
 

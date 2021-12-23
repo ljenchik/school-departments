@@ -1,3 +1,6 @@
+"""
+Employee service is used to make database queries
+"""
 from datetime import datetime
 
 from department_app import db
@@ -6,11 +9,20 @@ from department_app.models.employee_with_department_name import EmployeeDepName
 
 
 def get_employees_by_department_id(department_id: int):
-    return Employee.query.filter_by \
-        (department_id=department_id).order_by(Employee.date_created).all()
+    """
+    get employees working in the department given by its id
+    :param department_id:
+    :return: list of employees
+    """
+    return Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
 
 
 def create_employee_or_error(args: dict) -> (str, Employee):
+    """
+    adds and validates new employee
+    :param args:
+    :return: tuple (error, new employee)
+    """
     new_employee: Employee = Employee(
         **args
     )
@@ -27,6 +39,12 @@ def create_employee_or_error(args: dict) -> (str, Employee):
 
 
 def update_employee_or_error(employee_id: int, employee_dict: dict) -> (str, Employee):
+    """
+    updates employee's data
+    :param employee_id:
+    :param employee_dict:
+    :return: tuple (error, updated employee)
+    """
     error = validate_employee(employee_dict)
     if error is not None:
         return error, None
@@ -47,6 +65,11 @@ def update_employee_or_error(employee_id: int, employee_dict: dict) -> (str, Emp
 
 
 def validate_employee(emp: dict) -> str:
+    """
+    validates birth dates and start dates
+    :param emp:
+    :return: error
+    """
     start_date: datetime = emp['start_date']
     dob: datetime = emp['date_of_birth']
     if start_date.year - dob.year < 18:
@@ -58,6 +81,11 @@ def validate_employee(emp: dict) -> str:
 
 
 def delete_employee_by_id(employee_id):
+    """
+    deletes employee by her/his given id
+    :param employee_id:
+    :return: None or error
+    """
     emp_to_delete = Employee.query.get_or_404(employee_id)
     try:
         db.session.delete(emp_to_delete)
@@ -68,11 +96,21 @@ def delete_employee_by_id(employee_id):
 
 
 def get_employee_by_id(employee_id: int) -> Employee:
+    """
+    gets employee by her/his given id
+    :param employee_id:
+    :return: employee
+    """
     employee_to_edit = Employee.query.get(employee_id)
     return employee_to_edit
 
 
 def get_employee_by_dob(dob: str) -> list:
+    """
+    gets a list of employees born on given date of birth (dob)
+    :param dob:
+    :return: list of employees
+    """
     employee_list = EmployeeDepName.query.from_statement(
         db.text(f"""
         SELECT e.name, e.role, e.date_of_birth, e.salary, 
@@ -86,6 +124,12 @@ def get_employee_by_dob(dob: str) -> list:
 
 
 def get_employee_by_period(date_from: str, date_to: str) -> list:
+    """
+    gets a list of employees born between two given dates
+    :param date_from:
+    :param date_to:
+    :return: list of employees
+    """
     employee_list = EmployeeDepName.query.from_statement(
         db.text(f"""
             SELECT e.name, e.role, e.date_of_birth, e.salary, 

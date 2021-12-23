@@ -1,7 +1,5 @@
 """
-Employee model used to represent employees, this module defines the
-following classes:
-- `Employee`, employee model
+Employee model represents employee with class Employee
 """
 
 from datetime import datetime
@@ -14,15 +12,15 @@ from .department import Department
 
 class Employee(db.Model):
     """
-       Model representing employee
-       :param str 'name': employee's name
-       :param str 'role': employee's role
-       :param date 'date_of_birth': employee's date of birth
-       :param float 'salary': employee's salary
-       :param date 'start_date': date when employee started work
-       :type 'department': Department or None
-
-       """
+    Model representing employee
+    :param str 'name': employee's name
+    :param str 'role': employee's role
+    :param date 'date_of_birth': employee's date of birth
+    :param float 'salary': employee's salary
+    :param date 'start_date': date when employee started work
+    :type 'department': Department or None
+    """
+    # pylint: disable=too-few-public-methods
     #: employee's database id
     id = db.Column(db.Integer, primary_key=True)
     #: employee's department id

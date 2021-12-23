@@ -1,3 +1,6 @@
+"""
+Employee Flask views
+"""
 # pylint: disable=cyclic-import
 from datetime import datetime
 from json import JSONDecodeError
@@ -11,12 +14,21 @@ from department_app import app
 
 
 def get_url(url: str):
+    """
+    creates rest api url
+    :param url:
+    :return: absolute rest api url
+    """
     return flask.request.url_root + url
 
 
-# displays the list of employees of the chosen department
 @app.route('/department/<int:department_id>/employees')
 def index_employee(department_id: str):
+    """
+    displays the list of employees of the chosen department
+    :param department_id:
+    :return: rendered template
+    """
     dep = get_department_by_id(department_id)
     # get employees by department id
     # search_or_department = 'Departments'
@@ -26,12 +38,16 @@ def index_employee(department_id: str):
 
     employees: list = requests.get(get_url(f'/api/department/{department_id}/employee')).json()
     return render_template('employees.html', employees=employees, department=dep, error='',
-                           reffer = reffer)
+                           reffer=reffer)
 
 
-# deletes employee
 @app.route('/department/<int:department_id>/employees', methods=['POST'])
 def delete_employee(department_id: str):
+    """
+    deletes employee
+    :param department_id:
+    :return: rendered template or redirect to department employees
+    """
     dep = get_department_by_id(department_id)
     employee_id = request.form['id']
     error_dict: dict = requests.delete(get_url(f'/api/employee/{employee_id}')).json()
@@ -43,6 +59,11 @@ def delete_employee(department_id: str):
 
 
 def get_department_by_id(department_id: str) -> dict:
+    """
+    gets departments by its id
+    :param department_id:
+    :return: department from rest api as dictionary
+    """
     response = requests.get(flask.request.url_root + f'api/departments/{department_id}')
     if response.status_code == 200:
         return response.json()
@@ -51,6 +72,11 @@ def get_department_by_id(department_id: str) -> dict:
 
 @app.route('/add-employee/<int:department_id>', methods=['POST'])
 def add_employee_post(department_id: str):
+    """
+    adds employee
+    :param department_id:
+    :return: redirects to department employees
+    """
     dep: dict = get_department_by_id(department_id)
     new_employee: dict = fill_employee_from_request()
     new_employee['department_id'] = int(department_id)
@@ -75,7 +101,12 @@ def add_employee_post(department_id: str):
 
 
 @app.route('/add-employee/<int:department_id>')
-def add_employee_get(department_id:str):
+def add_employee_get(department_id: str):
+    """
+    gets new employee form
+    :param department_id:
+    :return: rendered template
+    """
     new_employee: dict = {"name": '', 'id': None, 'role': '',
                           'date_of_birth': None, 'salary': '',
                           'start_date': datetime.today().strftime('%Y-%m-%d')}
@@ -85,10 +116,19 @@ def add_employee_get(department_id:str):
 
 
 def parse_float(value):
+    """
+    parses float from string
+    :param value:
+    :return: float
+    """
     return float(value.replace(" ", "").replace(",", ""))
 
 
 def fill_employee_from_request():
+    """
+    fills employee from request form
+    :return: new employee as dictionary
+    """
     new_employee = {'department_id': request.form['department_id'], 'name': request.form['name'],
                     'role': request.form['role'], 'date_of_birth': request.form['birthdate'],
                     'salary': parse_float(request.form['salary']),
@@ -98,6 +138,11 @@ def fill_employee_from_request():
 
 @app.route('/edit-employee/<int:employee_id>', methods=['POST'])
 def edit_employee_put(employee_id):
+    """
+    edits employee
+    :param employee_id:
+    :return: redirects to department employees
+    """
     employee_to_edit: dict = fill_employee_from_request()
     employee_to_edit['id'] = employee_id
     department_id = employee_to_edit['department_id']
@@ -121,6 +166,11 @@ def edit_employee_put(employee_id):
 
 
 def get_employee_by_id(employee_id: str) -> dict:
+    """
+    gets employee by her/his id
+    :param employee_id:
+    :return: employee as dictionary
+    """
     response = requests.get(flask.request.url_root + f'api/employee/{employee_id}')
     if response.status_code == 200:
         return response.json()
@@ -129,6 +179,11 @@ def get_employee_by_id(employee_id: str) -> dict:
 
 @app.route('/edit-employee/<int:employee_id>')
 def edit_employee_get(employee_id):
+    """
+    gets employee by her/his id
+    :param employee_id:
+    :return: rendered template
+    """
     employee_to_edit: dict = get_employee_by_id(employee_id)
     dep: dict = get_department_by_id(employee_to_edit['department_id'])
     return render_template('employee.html', employee=employee_to_edit, department_name=dep['name'],

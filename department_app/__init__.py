@@ -1,3 +1,6 @@
+"""
+Imports Flask and Migrate, connects to database
+"""
 # pylint: disable=cyclic-import
 from flask import Flask
 from flask_migrate import Migrate

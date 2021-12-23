@@ -1,8 +1,5 @@
 """
-This module is used to populate database with departments and employees,
-it defines the following:
-Functions:
-- `populate_database`: populate database with employees and departments
+This file is used to populate database
 """
 
 from datetime import date

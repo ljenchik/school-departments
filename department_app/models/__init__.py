@@ -1,11 +1,10 @@
 """
-This package contains modules defining department and employee models:
+This package contains department and employee models:
 Modules:
-- `department.py`: defines model representing departments
-- `department_avg_salary.py`: defines model representing departments with average salaries
-- `employee.py`: defines model representing employees
-- 'employee_with_department_name.py' : defines model representing employee
-with department name used in search
+- `department.py`: represents departments
+- `department_avg_salary.py`: represents departments with average salaries
+- `employee.py`: defines employees model
+- 'employee_with_department_name.py' : defines employee with department name model, used in search
 """
 
 
