@@ -32,13 +32,13 @@ def index_employee(department_id: str):
     dep = get_department_by_id(department_id)
     # get employees by department id
     # search_or_department = 'Departments'
-    reffer = request.referrer
-    if 'search-employee' not in reffer:
-        reffer = None
+    referer = request.referrer
+    if 'search-employee' not in referer:
+        referer = None
 
     employees: list = requests.get(get_url(f'/api/department/{department_id}/employee')).json()
     return render_template('employees.html', employees=employees, department=dep, error='',
-                           reffer=reffer)
+                           reffer=referer)
 
 
 @app.route('/department/<int:department_id>/employees', methods=['POST'])
@@ -50,12 +50,32 @@ def delete_employee(department_id: str):
     """
     dep = get_department_by_id(department_id)
     employee_id = request.form['id']
-    error_dict: dict = requests.delete(get_url(f'/api/employee/{employee_id}')).json()
-    if len(error_dict) != 0:
-        employees = requests.get(get_url(f'/api/department/{department_id}/employee')).json()
-        return render_template('employees.html', employees=employees, department=dep,
-                               error=error_dict)
-    return redirect(f'/department/{department_id}/employees')
+    response = requests.delete(get_url(f'/api/employee/{employee_id}'))
+    error_text = handle_rest_response(response)
+    if error_text is None:
+        return redirect(f'/department/{department_id}/employees')
+
+    employees = requests.get(get_url(f'/api/department/{department_id}/employee')).json()
+    return render_template('employees.html', employees=employees, department=dep,
+                           error=error_text)
+
+
+def handle_rest_response(response):
+    """
+    checks rest api http response code and tries to get error text from the response
+    :param response:
+    :return: None is response is successful, error otherwise
+    """
+    error_text = None
+    if response.status_code != 200:
+        error_text = f'REST API Error. Response code: {response.status_code}. {response.text}'
+        try:
+            error_or_employee: dict = response.json()
+            if 'error' in error_or_employee:
+                error_text = error_or_employee['error']
+        except JSONDecodeError:
+            pass
+    return error_text
 
 
 def get_department_by_id(department_id: str) -> dict:
@@ -85,16 +105,9 @@ def add_employee_post(department_id: str):
         flask.request.url_root + f'/api/department/{department_id}/employee',
         data=new_employee
     )
-    if response.status_code == 200:
+    error_text = handle_rest_response(response)
+    if error_text is None:
         return redirect(f'/department/{department_id}/employees')
-
-    error_text = f'REST API Error. Response code: {response.status_code}. {response.text}'
-    try:
-        error_or_employee: dict = response.json()
-        if 'error' in error_or_employee:
-            error_text = error_or_employee['error']
-    except JSONDecodeError:
-        pass
 
     new_employee['id'] = None
     return render_template('employee.html', employee=new_employee, department_name=dep['name'],
@@ -150,16 +163,9 @@ def edit_employee_put(employee_id):
     response = requests.put(flask.request.url_root +
                             f'/api/employee/{employee_id}', data=employee_to_edit)
 
-    if response.status_code == 200:
+    error_text = handle_rest_response(response)
+    if error_text is None:
         return redirect(f'/department/{department_id}/employees')
-
-    error_text = f'REST API status code: {response.status_code}. Message: {response.text}'
-    try:
-        error_or_employee: dict = response.json()
-        if 'error' in error_or_employee:
-            error_text: str = error_or_employee['error']
-    except JSONDecodeError:
-        pass
 
     dep: dict = get_department_by_id(department_id)
     return render_template('employee.html', employee=employee_to_edit, department_name=dep['name'],
