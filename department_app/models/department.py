@@ -1,22 +1,20 @@
 """
-Department model used to represent departments, this module defines the
-following classes:
-- `Department`, department model
+Department model represents departments with class: Department
 """
 
-from department_app import db
 from datetime import datetime
+
+from department_app import db
 
 
 class Department(db.Model):
     """
-        Model representing department
-        :param str name: name of the department
-        """
-
-    #: Database id of the department
+    Model represents department
+    """
+    # pylint: disable=too-few-public-methods
+    #: Database department id
     id = db.Column(db.Integer, primary_key=True)
-    #: Name of the department
+    #: Department name
     name = db.Column(db.String(200), nullable=False, unique=True)
     #: Date when the department was created
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
@@ -26,5 +24,3 @@ class Department(db.Model):
         Returns string representation of department
         """
         return f'Department({self.name}, {self.id})'
-
-
