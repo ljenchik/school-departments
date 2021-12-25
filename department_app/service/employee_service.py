@@ -3,6 +3,8 @@ Employee service is used to make database queries
 """
 from datetime import datetime
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from department_app import db
 from department_app.models.employee import Employee
 from department_app.models.employee_with_department_name import EmployeeDepName
@@ -33,7 +35,7 @@ def create_employee_or_error(args: dict) -> (str, Employee):
         db.session.add(new_employee)
         db.session.commit()
         return None, new_employee
-    except Exception as error:
+    except SQLAlchemyError as error:
         db.session.rollback()
         return 'There was an issue adding a new employee ' + str(error), None
 
@@ -59,7 +61,7 @@ def update_employee_or_error(employee_id: int, employee_dict: dict) -> (str, Emp
     try:
         db.session.commit()
         return None, employee
-    except Exception as error:
+    except SQLAlchemyError as error:
         db.session.rollback()
         return 'There was an issue editing an employee: ' + str(error), None
 
@@ -90,7 +92,7 @@ def delete_employee_by_id(employee_id):
     try:
         db.session.delete(emp_to_delete)
         db.session.commit()
-    except:
+    except SQLAlchemyError:
         db.session.rollback()
         return 'There was an issue deleting this employee'
 

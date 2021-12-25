@@ -2,6 +2,7 @@
 Department service is used to make database queries
 """
 # pylint: disable=cyclic-import
+from sqlalchemy.exc import SQLAlchemyError
 
 from department_app import db
 from department_app.models.department import Department
@@ -37,7 +38,7 @@ def create_department_or_error(name: str) -> (str, Department):
         db.session.add(new_department)
         db.session.commit()  # saves to db
         return None, new_department
-    except Exception as error:
+    except SQLAlchemyError as error:
         db.session.rollback()
         error = str(error)  # exception string from Python
         if 'Duplicate' in error:  # checks if department with the same name exists (unique in db)
@@ -69,7 +70,7 @@ def update_department(department_id: int, name: str) -> (str, Department):
     try:
         db.session.commit()
         return None, department
-    except Exception as error:
+    except SQLAlchemyError as error:
         db.session.rollback()
         error: str = str(error)
         if 'Duplicate' in error:
@@ -89,7 +90,7 @@ def delete_department_by_id(department_id: int):
         db.session.delete(dep_to_delete)  # deletes from db
         db.session.commit()  # saves changes to db
         return None
-    except:
+    except SQLAlchemyError:
         db.session.rollback()
         # returns error if department has employees
         return 'You cannot delete department with employees'

@@ -95,8 +95,8 @@ def edit_department(department_id: int):
     :return:
     """
     if request.method == 'POST':
-        dep_to_edit_newname = request.form[
-            'name']  # request form from template department.html and input a new department name
+        # request form from template department.html and input a new department name
+        dep_to_edit_newname = request.form['department_name']
         dict_dep_to_edit: dict = {'name': dep_to_edit_newname}  # dictionary is needed for json
         # Makes request to rest api to upload the department to be edited by its id
         error_or_department: dict = requests.put(
@@ -108,8 +108,7 @@ def edit_department(department_id: int):
             if error_text is not None:
                 dep_to_edit = {'name': dep_to_edit_newname, 'id': department_id}
                 # Render department edit template with error_text displayed in red rectangle
-                return render_template('department.html', dep=dep_to_edit,
-                                       error=error_text)
+                return render_template('department.html', dep=dep_to_edit, error=error_text)
         return redirect('/')  # redirects the user to the root, list of all departments
     # When user clicks on edit, we display an edit department form from 'department.html'
     # template with the current department name
