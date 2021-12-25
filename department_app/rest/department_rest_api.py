@@ -28,16 +28,18 @@ class DepartmentWithSalary(Resource):
     Department REST API class
     """
 
+    @classmethod
     @marshal_with(department_with_salary_fields)
-    def get(self):
+    def get(cls):
         """
         GET request to fetch all departments with average salaries
         :return: all departments with average salaries in JSON format
         """
         return read_departments_with_salaries()
 
+    @classmethod
     @marshal_with(department_fields)  # serialization of the returned object
-    def post(self):
+    def post(cls):
         """
         POST request
         Deserializes request data, uses service to add department to
@@ -58,8 +60,9 @@ class Department(Resource):
     Department REST API class
     """
 
+    @classmethod
     @marshal_with(department_fields)
-    def get(self, department_id):
+    def get(cls, department_id):
         """
         GET request to fetch all departments via service
         :return: all departments in JSON format
@@ -68,8 +71,9 @@ class Department(Resource):
 
     # serialization of the returned object from this method
     # (returns department with 3 fields in the form of dictionary)
+    @classmethod
     @marshal_with(department_fields)
-    def put(self, department_id: int):
+    def put(cls, department_id: int):
         """
         PUT request to deserialize request data, find the department with
         given department_id and update it
@@ -84,7 +88,8 @@ class Department(Resource):
             return {'error': error}, 500  # 500 is http response code which means server failed
         return department, 202  # if there is no error the function returns updated department
 
-    def delete(self, department_id):
+    @classmethod
+    def delete(cls, department_id):
         """
         DELETE request to delete the department with given department id
         :return: empty dictionary or a tuple of an error message and a status code 500

@@ -32,10 +32,11 @@ def search_employee_get():
         employees = requests.get(get_url(f'/api/employee/search?date_of_birth={birthdate}')).json()
         return render_template('employee_search.html', date_of_birth=birthdate,
                                employees=employees)
-    elif 'date_from' in request.args and 'date_to' in request.args:
+    if 'date_from' in request.args and 'date_to' in request.args:
         date_from = request.args['date_from']
         date_to = request.args['date_to']
-        employees = requests.get(get_url
-                                 (f'/api/employee/search?date_from={date_from}&date_to={date_to}')).json()
+        employees = requests.get(
+            get_url(
+                f'/api/employee/search?date_from={date_from}&date_to={date_to}')).json()
     return render_template('employee_search.html', date_from=date_from,
                            date_to=date_to, employees=employees)

@@ -16,7 +16,8 @@ def get_employees_by_department_id(department_id: int):
     :param department_id:
     :return: list of employees
     """
-    return Employee.query.filter_by(department_id=department_id).order_by(Employee.date_created).all()
+    return Employee.query.filter_by(
+        department_id=department_id).order_by(Employee.date_created).all()
 
 
 def create_employee_or_error(args: dict) -> (str, Employee):
@@ -80,6 +81,7 @@ def validate_employee(emp: dict) -> str:
         return "Please check employee's date of birth"
     if dob >= datetime.today():
         return "Please check employee's date of birth"
+    return None
 
 
 def delete_employee_by_id(employee_id):
@@ -95,6 +97,7 @@ def delete_employee_by_id(employee_id):
     except SQLAlchemyError:
         db.session.rollback()
         return 'There was an issue deleting this employee'
+    return None
 
 
 def get_employee_by_id(employee_id: int) -> Employee:

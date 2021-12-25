@@ -54,8 +54,9 @@ class Employee(Resource):
     Employee REST API class
     """
 
+    @classmethod
     @marshal_with(employee_fields)
-    def get(self, employee_id):
+    def get(cls, employee_id):
         """
         GET request to edit employee
         :return: employee required to edit
@@ -63,9 +64,9 @@ class Employee(Resource):
         employee_to_edit: dict = get_employee_by_id(employee_id)
         return employee_to_edit
 
-    # deletes employee
+    @classmethod
     @marshal_with(employee_fields)
-    def delete(self, employee_id):
+    def delete(cls, employee_id):
         """
         DELETE request
         Uses service to delete the employee by employee id
@@ -77,8 +78,9 @@ class Employee(Resource):
             return {'error': error}, 500
         return {}
 
+    @classmethod
     @marshal_with(employee_fields)
-    def put(self, employee_id):
+    def put(cls, employee_id):
         """
         PUT request to update employee's data
         :return: a tuple of updated employee in JSON format, or a
@@ -96,16 +98,18 @@ class DepartmentEmployee(Resource):
     DepartmentEmployee REST API class
     """
 
+    @classmethod
     @marshal_with(employee_fields)  # serialization of the returned object to json()
-    def get(self, department_id):
+    def get(cls, department_id):
         """
         GET request handler of DepartmentEmployee API
         :return: employees working in the department with a given department_id
         """
         return get_employees_by_department_id(department_id)
 
+    @classmethod
     @marshal_with(employee_fields)  # serialization of the returned object to json
-    def post(self, department_id):
+    def post(cls, department_id):
         """
         POST request to add new employee
         returns newly added employee in JSON format
@@ -127,8 +131,9 @@ class SearchEmployee(Resource):
     SearchEmployee API class
     """
 
+    @classmethod
     @marshal_with(employee_dep_name_fields)  # serialization of the returned object to json()
-    def get(self):
+    def get(cls):
         """
         GET request to fetch emloyees with given date of birth or over a period
         between two given dates
@@ -137,5 +142,6 @@ class SearchEmployee(Resource):
         args: dict = searchemployee_parse_args.parse_args()
         if args['date_of_birth'] is not None:
             return get_employee_by_dob(args['date_of_birth'])
-        elif args['date_from'] is not None and args['date_to'] is not None:
+        if args['date_from'] is not None and args['date_to'] is not None:
             return get_employee_by_period(args['date_from'], args['date_to'])
+        return None

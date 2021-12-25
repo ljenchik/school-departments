@@ -68,6 +68,7 @@ def get_department_by_id(department_id: str) -> dict:
     if response.status_code == 200:
         return response.json()
     abort(response.status_code)  # raise exception
+    return None
 
 
 @app.route('/add-employee/<int:department_id>', methods=['POST'])
@@ -175,6 +176,7 @@ def get_employee_by_id(employee_id: str) -> dict:
     if response.status_code == 200:
         return response.json()
     abort(response.status_code)  # raise exception
+    return None
 
 
 @app.route('/edit-employee/<int:employee_id>')
