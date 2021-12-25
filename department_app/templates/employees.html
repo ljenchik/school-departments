@@ -59,6 +59,11 @@
     </table>
 
     <div class="container">
+        {% if error != '' %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+        {%endif%}
         <a class="btn float-right btn-primary mt-2" href="/add-employee/{{ department.id }}" role="button">Add
             employee</a>
     </div>
