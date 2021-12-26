@@ -1,4 +1,5 @@
 # pylint: disable=missing-module-docstring
+# pylint: disable=C0103
 
 from datetime import datetime
 
