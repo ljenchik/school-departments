@@ -1,6 +1,7 @@
 """
 departments_rest_api.py defines two classes: DepartmentWithSalary and Department
 """
+import http
 
 from flask_restful import Resource, fields, marshal_with, reqparse
 
@@ -8,7 +9,8 @@ from department_app.service.department_service import read_departments_with_sala
     create_department_or_error, get_department_by_id, update_department, delete_department_by_id
 
 department_request_parser: reqparse.RequestParser = reqparse.RequestParser()
-department_request_parser.add_argument('name', type=str, required=True, help='Name of department')
+department_request_parser.add_argument(
+    'name', type=str, required=True, help='Name of department is required')
 
 department_with_salary_fields = {
     'id': fields.Integer,
@@ -46,12 +48,9 @@ class DepartmentWithSalary(Resource):
         database and returns newly added department in JSON format
         """
         args: dict = department_request_parser.parse_args()
-        if args['name'] == '':
-            return {'error': 'Department name must be set'}, 500
-
         error, new_department = create_department_or_error(args['name'])
         if error is not None:
-            return {'error': error, 'name': args['name']}, 500
+            return {'error': error}, 500
         return new_department
 
 
@@ -75,8 +74,8 @@ class Department(Resource):
     @marshal_with(department_fields)
     def put(cls, department_id: int):
         """
-        PUT request to deserialize request data, find the department with
-        given department_id and update it
+        PUT request to deserialize request data, finds the department with
+        given department_id and updates it
         :return: a tuple of updated department in JSON format and status code 202, or a
         tuple of error messages and status code 500 in case of validation error
         """
@@ -85,8 +84,8 @@ class Department(Resource):
         error, department = update_department(department_id, args['name'])
         # tries to save to db and returns error (empty name or duplicate) if unsuccessful
         if error is not None:  # if there is an error the function returns dictionary with error
-            return {'error': error}, 500  # 500 is http response code which means server failed
-        return department, 202  # if there is no error the function returns updated department
+            return {'error': error}, 500
+        return department, http.HTTPStatus.OK
 
     @classmethod
     def delete(cls, department_id):

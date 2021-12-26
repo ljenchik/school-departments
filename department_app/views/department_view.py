@@ -1,6 +1,7 @@
 """
 Department Flask views
 """
+import http
 from typing import Union
 
 import flask
@@ -19,7 +20,7 @@ def get_department_by_id(department_id: Union[str, int]) -> dict:
     """
     response: requests.Response = requests.get(
         f'{flask.request.url_root}api/departments/{department_id}')
-    if response.status_code == 200:
+    if response.status_code == http.HTTPStatus.OK:
         return response.json()
     abort(response.status_code)  # raise exception
     return None
