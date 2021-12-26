@@ -2,6 +2,7 @@
 Employee Flask views
 """
 # pylint: disable=cyclic-import
+import http
 from datetime import datetime
 from json import JSONDecodeError
 
@@ -67,7 +68,7 @@ def handle_rest_response(response):
     :return: None is response is successful, error otherwise
     """
     error_text = None
-    if response.status_code != 200:
+    if response.status_code != http.HTTPStatus.OK:
         error_text = f'REST API Error. Response code: {response.status_code}. {response.text}'
         try:
             error_or_employee: dict = response.json()
@@ -85,7 +86,7 @@ def get_department_by_id(department_id: str) -> dict:
     :return: department from rest api as dictionary
     """
     response = requests.get(flask.request.url_root + f'api/departments/{department_id}')
-    if response.status_code == 200:
+    if response.status_code == http.HTTPStatus.OK:
         return response.json()
     abort(response.status_code)  # raise exception
     return None
@@ -179,7 +180,7 @@ def get_employee_by_id(employee_id: str) -> dict:
     :return: employee as dictionary
     """
     response = requests.get(flask.request.url_root + f'api/employee/{employee_id}')
-    if response.status_code == 200:
+    if response.status_code == http.HTTPStatus.OK:
         return response.json()
     abort(response.status_code)  # raise exception
     return None
