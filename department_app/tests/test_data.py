@@ -1,6 +1,3 @@
-# pylint: disable=missing-module-docstring
-# pylint: disable=invalid-name
-
 from datetime import datetime
 
 from department_app.models.department import Department
