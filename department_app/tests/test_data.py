@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 from datetime import datetime
 
 from department_app.models.department import Department
