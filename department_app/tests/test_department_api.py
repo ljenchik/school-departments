@@ -110,3 +110,25 @@ class TestDepartmentApi(TestCase):
                 {'error': 'Department with this name already exist', 'id': 0, 'name': None},
                 response.json
             )
+
+    def test_delete_department_by_id_success(self):
+        with patch(
+                'department_app.rest.department_rest_api.delete_department_by_id',
+                return_value=None
+        ) as delete_department_by_id:
+            response = self.client.delete('/api/departments/3')
+
+            delete_department_by_id.assert_called_once_with(3)
+            self.assertEqual(http.HTTPStatus.OK, response.status_code)
+            self.assertEqual({}, response.json)
+
+    def test_delete_department_by_id_fail(self):
+        with patch(
+                'department_app.rest.department_rest_api.delete_department_by_id',
+                return_value='You cannot delete department with employees'
+        ) as delete_department_by_id:
+            response = self.client.delete('/api/departments/3')
+
+            delete_department_by_id.assert_called_once_with(3)
+            self.assertEqual(http.HTTPStatus.INTERNAL_SERVER_ERROR, response.status_code)
+            self.assertEqual({'error': 'You cannot delete department with employees'}, response.json)
