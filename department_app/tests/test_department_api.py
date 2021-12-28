@@ -23,10 +23,7 @@ class TestDepartmentApi(TestCase):
     # pylint: disable=no-self-use
 
     def setUp(self) -> None:
-        app.config['TESTING'] = True
         self.client = app.test_client()
-        self.value_error = ValueError('Test Value Error Message')
-        self.failure_uuid = 'failure_uuid'
 
     def test_get_departments_with_avg_salary(self):
         mock_return_value = [department_with_salaries_1, department_with_salaries_2]
@@ -131,4 +128,5 @@ class TestDepartmentApi(TestCase):
 
             delete_department_by_id.assert_called_once_with(3)
             self.assertEqual(http.HTTPStatus.INTERNAL_SERVER_ERROR, response.status_code)
-            self.assertEqual({'error': 'You cannot delete department with employees'}, response.json)
+            self.assertEqual(
+                {'error': 'You cannot delete department with employees'}, response.json)

@@ -58,14 +58,13 @@ class Employee(Resource):
     @marshal_with(employee_fields)
     def get(cls, employee_id):
         """
-        GET request to edit employee
-        :return: employee required to edit
+        GET request to fetch employee by her/his id
+        :return: employee
         """
         employee_to_edit: dict = get_employee_by_id(employee_id)
         return employee_to_edit
 
     @classmethod
-    @marshal_with(employee_fields)
     def delete(cls, employee_id):
         """
         DELETE request
