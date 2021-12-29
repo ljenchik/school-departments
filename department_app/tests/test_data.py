@@ -63,3 +63,14 @@ employee_4.start_date = datetime(2012, 9, 3)
 employee_4.id = 4
 employee_4.department_id = 2
 employee_4.date_created = datetime(2021, 11, 10)
+
+employee_5 = EmployeeDepName()
+employee_5.name = 'Natalie Ashford'
+employee_5.role = 'Teacher'
+employee_5.date_of_birth = datetime(1975, 1, 1)
+employee_5.salary = 28956.34
+employee_5.start_date = datetime(2003, 9, 3)
+employee_5.id = 5
+employee_5.department_id = 4
+employee_5.department_name = 'Department of Arts'
+employee_5.date_created = datetime(2021, 11, 10)

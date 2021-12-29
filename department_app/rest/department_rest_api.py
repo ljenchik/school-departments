@@ -3,7 +3,7 @@ departments_rest_api.py defines two classes: DepartmentWithSalary and Department
 """
 import http
 
-from flask_restful import Resource, fields, marshal_with, reqparse
+from flask_restful import Resource, fields, marshal_with, reqparse, abort
 
 from department_app.service.department_service import read_departments_with_salaries, \
     create_department_or_error, get_department_by_id, update_department, delete_department_by_id
@@ -50,7 +50,7 @@ class DepartmentWithSalary(Resource):
         args: dict = department_request_parser.parse_args()
         error, new_department = create_department_or_error(args['name'])
         if error is not None:
-            return {'error': error}, 500
+            abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return new_department
 
 
@@ -77,23 +77,23 @@ class Department(Resource):
         PUT request to deserialize request data, finds the department with
         given department_id and updates it
         :return: a tuple of updated department in JSON format and status code 202, or a
-        tuple of error messages and status code 500 in case of validation error
+        tuple of error messages and status code 400 in case of validation error
         """
         args: dict = department_request_parser.parse_args()  # get the name of the department
         # from the request body
         error, department = update_department(department_id, args['name'])
         # tries to save to db and returns error (empty name or duplicate) if unsuccessful
         if error is not None:  # if there is an error the function returns dictionary with error
-            return {'error': error}, 500
+            abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return department, http.HTTPStatus.OK
 
     @classmethod
     def delete(cls, department_id):
         """
         DELETE request to delete the department with given department id
-        :return: empty dictionary or a tuple of an error message and a status code 500
+        :return: empty dictionary or a tuple of an error message and a status code 400
         """
         error = delete_department_by_id(department_id)
         if error is not None:
-            return {'error': error}, 500
+            abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return {}

@@ -2,9 +2,10 @@
 Employee REST API contains classes: IsoDateFormat, Employee, DepartmentEmployee, SearchEmployee
 """
 # pylint: disable=cyclic-import
+import http
 from datetime import datetime
 
-from flask_restful import Resource, fields, marshal_with, reqparse
+from flask_restful import Resource, fields, marshal_with, reqparse, abort
 
 from department_app.service.employee_service import create_employee_or_error, \
     get_employees_by_department_id, \
@@ -15,7 +16,7 @@ employee_parse_args: reqparse.RequestParser = reqparse.RequestParser()
 employee_parse_args.add_argument('name', type=str, required=True, help="Employee's name")
 employee_parse_args.add_argument('role', type=str, required=True, help="Employee's role")
 employee_parse_args.add_argument('date_of_birth', type=lambda x: datetime.strptime(x, '%Y-%m-%d'),
-                                 required=True, help='Date of birth of employee')
+                                 required=True, help="Employee's date of birth")
 employee_parse_args.add_argument('salary', type=float, required=True, help="Employee's salary")
 employee_parse_args.add_argument('department_id', type=int, required=True, help='Department id')
 employee_parse_args.add_argument('start_date', type=lambda x: datetime.strptime(x, '%Y-%m-%d'),
@@ -69,12 +70,12 @@ class Employee(Resource):
         """
         DELETE request
         Uses service to delete the employee by employee id
-        :return: empty dictionary or a tuple of an error message and a status code 500
+        :return: empty dictionary or a tuple of an error message and a status code 400
         in case of employee is not found
         """
         error: str = delete_employee_by_id(employee_id)
         if error is not None:
-            return {'error': error}, 500
+            return abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return {}
 
     @classmethod
@@ -83,12 +84,12 @@ class Employee(Resource):
         """
         PUT request to update employee's data
         :return: a tuple of updated employee in JSON format, or a
-        tuple of error message and status code 500 in case of validation error
+        tuple of error message and status code 400 in case of validation error
         """
         args: dict = employee_parse_args.parse_args()  # returns employee dict from flask request
         error, employee = update_employee_or_error(employee_id, args)
         if error is not None:
-            return {'error': error}, 500
+            abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return employee
 
 
@@ -117,7 +118,7 @@ class DepartmentEmployee(Resource):
         args['department_id'] = department_id
         (error, employee) = create_employee_or_error(args)
         if error is not None:
-            return {'error': error}, 500
+            abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return employee
 
 
@@ -136,11 +137,13 @@ class SearchEmployee(Resource):
         """
         GET request to fetch emloyees with given date of birth or over a period
         between two given dates
-        :return: employees with respective department names
+        :return: employees with respective departments' names
         """
         args: dict = searchemployee_parse_args.parse_args()
         if args['date_of_birth'] is not None:
             return get_employee_by_dob(args['date_of_birth'])
         if args['date_from'] is not None and args['date_to'] is not None:
             return get_employee_by_period(args['date_from'], args['date_to'])
+        abort(
+            http.HTTPStatus.BAD_REQUEST, error='date_of_birth or date_from and date_to are required')
         return None

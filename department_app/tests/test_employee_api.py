@@ -7,7 +7,8 @@ from unittest.mock import patch
 
 from department_app import app
 from department_app.models.employee import Employee
-from department_app.tests.test_data import employee_1, employee_2, employee_4
+from department_app.tests.test_data \
+    import employee_1, employee_2, employee_4, employee_5, employee_3
 
 
 def employee_to_json(employee: Employee) -> dict:
@@ -59,7 +60,7 @@ class TestEmployeetApi(TestCase):
             response = self.client.delete('/api/employee/3')
 
             delete_employee_by_id.assert_called_once_with(3)
-            self.assertEqual(http.HTTPStatus.INTERNAL_SERVER_ERROR, response.status_code)
+            self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
             self.assertEqual(
                 {'error': 'There was an issue deleting this employee'}, response.json)
 
@@ -68,8 +69,10 @@ class TestEmployeetApi(TestCase):
                 'department_app.rest.employee_rest_api.update_employee_or_error',
                 return_value=(None, employee_2)
         ) as update_employee_or_error:
-            updated_employee = {'name': 'req name', 'role': 'req role', 'date_of_birth': '1981-12-12',
-                                'salary': 23456.0, 'start_date': '2018-09-03', 'department_id': 2}
+            updated_employee = {
+                'name': 'req name', 'role': 'req role', 'date_of_birth': '1981-12-12',
+                'salary': 23456.0, 'start_date': '2018-09-03', 'department_id': 2
+            }
             response = self.client.put('/api/employee/2', data=updated_employee)
 
             # rest api converts string dates into python datetime objects
@@ -125,12 +128,65 @@ class TestEmployeetApi(TestCase):
             added_employee['start_date'] = datetime(2015, 9, 3)
             create_employee_or_error.assert_called_once_with(added_employee)
 
-            self.assertEqual(http.HTTPStatus.INTERNAL_SERVER_ERROR, response.status_code)
-            self.assertEqual({'date_of_birth': None,
-                              'department_id': 0,
-                              'error': 'There was an issue adding a new employee ',
-                              'id': 0,
-                              'name': None,
-                              'role': None,
-                              'salary': None,
-                              'start_date': None}, response.json)
+            self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
+            self.assertEqual({'error': 'There was an issue adding a new employee '}, response.json)
+
+    def test_search_employees_dob_success(self):
+        mock_return_value = [employee_5]
+        with patch(
+                'department_app.rest.employee_rest_api.get_employee_by_dob',
+                return_value=mock_return_value
+        ) as get_employee_by_dob:
+            response = self.client.get('/api/employee/search?date_of_birth=1975-01-01')
+
+            expected_json = [employee_to_json(employee_5)]
+            get_employee_by_dob.assert_called_once_with(datetime(1975, 1, 1))
+
+            self.assertEqual(http.HTTPStatus.OK, response.status_code)
+            self.assertEqual(expected_json, response.json)
+
+    def test_search_employees_dob_fail(self):
+        mock_return_value = []
+        with patch(
+                'department_app.rest.employee_rest_api.get_employee_by_dob',
+                return_value=mock_return_value
+        ) as get_employee_by_dob:
+            response = self.client.get('/api/employee/search')
+
+            get_employee_by_dob.assert_not_called()
+
+            self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
+            self.assertEqual(
+                {'error': 'date_of_birth or date_from and date_to are required'}, response.json)
+
+    def test_search_employees_period_success(self):
+        mock_return_value = [employee_3, employee_5]
+        with patch(
+                'department_app.rest.employee_rest_api.get_employee_by_period',
+                return_value=mock_return_value
+        ) as get_employee_by_period:
+            response = self.client.get(
+                '/api/employee/search?date_from=1974-12-12&date_to=1983-01-01')
+
+            expected_json = [employee_to_json(d) for d in mock_return_value]
+            get_employee_by_period.assert_called_once_with(
+                datetime(1974, 12, 12), datetime(1983, 1, 1))
+
+            self.assertEqual(http.HTTPStatus.OK, response.status_code)
+            self.assertEqual(expected_json, response.json)
+
+    def test_search_employees_period_fail_invalid_date(self):
+        mock_return_value = [employee_3, employee_5]
+        with patch(
+                'department_app.rest.employee_rest_api.get_employee_by_period',
+                return_value=mock_return_value
+        ) as get_employee_by_period:
+            response = self.client.get \
+                ('/api/employee/search?date_from=1974-23-12&date_to=1983-01-01')
+
+            get_employee_by_period.assert_not_called()
+
+            self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
+            self.assertEqual(
+                {'message': {'date_from': "time data '1974-23-12' does not match format "
+                                          "'%Y-%m-%d'"}}, response.json)
