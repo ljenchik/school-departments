@@ -102,7 +102,7 @@ class DepartmentEmployee(Resource):
     def get(cls, department_id):
         """
         GET request handler of DepartmentEmployee API
-        :return: employees working in the department with a given department_id
+        :return: employees working in the department with given department_id
         """
         return get_employees_by_department_id(department_id)
 
