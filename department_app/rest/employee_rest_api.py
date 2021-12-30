@@ -145,5 +145,6 @@ class SearchEmployee(Resource):
         if args['date_from'] is not None and args['date_to'] is not None:
             return get_employee_by_period(args['date_from'], args['date_to'])
         abort(
-            http.HTTPStatus.BAD_REQUEST, error='date_of_birth or date_from and date_to are required')
+            http.HTTPStatus.BAD_REQUEST,
+            error='date_of_birth or date_from and date_to are required')
         return None
