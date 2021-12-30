@@ -14,7 +14,7 @@ def read_departments_with_salaries() -> list:
     Fetches all departments with average salaries from database
     :return: list of all departments
     """
-    departments = DepartmentAvgSalary.query.from_statement(
+    departments = db.session.query(DepartmentAvgSalary).from_statement(
         db.text("""select d.*, avg_salary
                             from department d 
                             left join (
@@ -52,7 +52,7 @@ def get_department_by_id(department_id: int) -> Department:
     :param department_id:
     :return: department
     """
-    department = Department.query.get(department_id)
+    department = db.session.query(Department).get(department_id)
     return department
 
 
@@ -92,5 +92,5 @@ def delete_department_by_id(department_id: int):
         return None
     except SQLAlchemyError:
         db.session.rollback()
-        # returns error if department has employees
+        # returns message if department has employees
         return 'You cannot delete department with employees'
