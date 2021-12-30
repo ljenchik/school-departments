@@ -9,7 +9,7 @@ from sqlalchemy import ForeignKey
 from department_app import db
 from .department import Department
 
-
+# pylint: disable=too-many-instance-attributes
 class Employee(db.Model):
     """
     Model representing employee
