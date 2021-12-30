@@ -23,10 +23,7 @@ class TestDepartmentApi(TestCase):
     # pylint: disable=no-self-use
 
     def setUp(self) -> None:
-        app.config['TESTING'] = True
         self.client = app.test_client()
-        self.value_error = ValueError('Test Value Error Message')
-        self.failure_uuid = 'failure_uuid'
 
     def test_get_departments_with_avg_salary(self):
         mock_return_value = [department_with_salaries_1, department_with_salaries_2]
@@ -62,9 +59,9 @@ class TestDepartmentApi(TestCase):
             response = self.client.post('/api/departments', data={'name': 'Requested name'})
 
             create_department_or_error.assert_called_once_with('Requested name')
-            self.assertEqual(http.HTTPStatus.INTERNAL_SERVER_ERROR, response.status_code)
+            self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
             self.assertEqual(
-                {'error': 'Department with this name already exist', 'id': 0, 'name': None},
+                {'error': 'Department with this name already exist'},
                 response.json)
 
     def test_add_department_fail_empty_name(self):
@@ -105,8 +102,31 @@ class TestDepartmentApi(TestCase):
             response = self.client.put('/api/departments/3', data={'name': 'Requested name'})
 
             update_department.assert_called_once_with(3, 'Requested name')
-            self.assertEqual(http.HTTPStatus.INTERNAL_SERVER_ERROR, response.status_code)
+            self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
             self.assertEqual(
-                {'error': 'Department with this name already exist', 'id': 0, 'name': None},
+                {'error': 'Department with this name already exist'},
                 response.json
             )
+
+    def test_delete_department_by_id_success(self):
+        with patch(
+                'department_app.rest.department_rest_api.delete_department_by_id',
+                return_value=None
+        ) as delete_department_by_id:
+            response = self.client.delete('/api/departments/3')
+
+            delete_department_by_id.assert_called_once_with(3)
+            self.assertEqual(http.HTTPStatus.OK, response.status_code)
+            self.assertEqual({}, response.json)
+
+    def test_delete_department_by_id_fail(self):
+        with patch(
+                'department_app.rest.department_rest_api.delete_department_by_id',
+                return_value='You cannot delete department with employees'
+        ) as delete_department_by_id:
+            response = self.client.delete('/api/departments/3')
+
+            delete_department_by_id.assert_called_once_with(3)
+            self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
+            self.assertEqual(
+                {'error': 'You cannot delete department with employees'}, response.json)

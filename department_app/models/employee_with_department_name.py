@@ -1,3 +1,4 @@
+
 """
 Employee with department name model represents employees with department name
 they belong to with class EmployeeDepName
@@ -7,6 +8,7 @@ from datetime import datetime
 from department_app import db
 
 
+# pylint: disable=too-many-instance-attributes
 class EmployeeDepName(db.Model):
     """
     Model representing employee
