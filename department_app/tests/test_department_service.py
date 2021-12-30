@@ -8,7 +8,7 @@ from unittest.mock import patch
 from sqlalchemy.exc import SQLAlchemyError
 
 from department_app.models.department_avg_salary import DepartmentAvgSalary
-from department_app.rest import Department
+from department_app.models.department import Department
 from department_app.service.department_service \
     import read_departments_with_salaries, get_department_by_id, \
     create_department_or_error, update_department, delete_department_by_id

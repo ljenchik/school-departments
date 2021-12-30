@@ -16,9 +16,8 @@ def get_employees_by_department_id(department_id: int):
     :param department_id:
     :return: list of employees
     """
-    return Employee.query.filter_by(
+    return db.session.query(Employee).filter_by(
         department_id=department_id).order_by(Employee.date_created).all()
-
 
 def create_employee_or_error(args: dict) -> (str, Employee):
     """
