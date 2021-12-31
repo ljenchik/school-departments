@@ -74,11 +74,11 @@ def validate_employee(emp: dict) -> str:
     """
     start_date: datetime = emp['start_date']
     dob: datetime = emp['date_of_birth']
+    if dob >= datetime.today() or dob.year >= start_date.year:
+        return "Please check employee's date of birth"
     if start_date.year - dob.year < 18:
         return 'Employee must be at least 18 to start work'
     if datetime.today().year - dob.year > 100:
-        return "Please check employee's date of birth"
-    if dob >= datetime.today():
         return "Please check employee's date of birth"
     return None
 
@@ -105,7 +105,7 @@ def get_employee_by_id(employee_id: int) -> Employee:
     :param employee_id:
     :return: employee
     """
-    employee_to_edit = Employee.query.get(employee_id)
+    employee_to_edit = db.session.query(Employee).get(employee_id)
     return employee_to_edit
 
 
@@ -115,7 +115,7 @@ def get_employee_by_dob(dob: str) -> list:
     :param dob:
     :return: list of employees
     """
-    employee_list = EmployeeDepName.query.from_statement(
+    employee_list = db.session.query(EmployeeDepName).from_statement(
         db.text(f"""
         SELECT e.name, e.role, e.date_of_birth, e.salary, 
             e.start_date, e.department_id, e.id, d.name as department_name 
@@ -134,7 +134,7 @@ def get_employee_by_period(date_from: str, date_to: str) -> list:
     :param date_to:
     :return: list of employees
     """
-    employee_list = EmployeeDepName.query.from_statement(
+    employee_list = db.session.query(EmployeeDepName).from_statement(
         db.text(f"""
             SELECT e.name, e.role, e.date_of_birth, e.salary, 
             e.start_date, e.department_id, e.id, d.name as department_name 
