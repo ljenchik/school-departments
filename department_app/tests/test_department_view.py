@@ -69,7 +69,8 @@ class TestDepartmentView(TestCase):
         ) as requests_mock:
             # Action
             response = self.client.post('/department/edit/123',
-                                        data={'department_name': 'asdf asdfas', 'error': 'error_text'})
+                                        data={'department_name': 'asdf asdfas',
+                                              'error': 'error_text'})
             # Asserts
             self.assertEqual(http.HTTPStatus.OK, response.status_code)
             self.assertIn('error_text', str(response.data))
