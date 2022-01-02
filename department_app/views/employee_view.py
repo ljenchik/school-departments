@@ -27,14 +27,13 @@ def get_url(url: str):
 def index_employee(department_id: str):
     """
     displays the list of employees of the chosen department
-    :param department_id:
+    :param department_id
     :return: rendered template
     """
-    dep = get_department_by_id(department_id)
+    dep: dict = get_department_by_id(department_id)
     # get employees by department id
-    # search_or_department = 'Departments'
     referer = request.referrer
-    if 'search-employee' not in referer:
+    if referer is None or 'search-employee' not in referer:
         referer = None
 
     employees: list = requests.get(get_url(f'/api/department/{department_id}/employee')).json()
