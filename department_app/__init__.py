@@ -5,15 +5,17 @@ Imports Flask and Migrate, connects to database
 from flask import Flask
 from flask_migrate import Migrate
 
+from config import Config
 from .models import db
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:1234@localhost/dep'
+app.config.from_object(Config)
 
 db.init_app(app)
 migrate = Migrate(app, db)
 
 from .views import init_views
+
 init_views()
 
 from .rest import api
