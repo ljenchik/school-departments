@@ -33,7 +33,8 @@ def index_department():
     returns rendered `departments.html` template for url route `/`
     :return: rendered `departments.html` template
     """
-    departments = requests.get(flask.request.url_root + 'api/departments').json()
+    response = requests.get(flask.request.url_root + 'api/departments')
+    departments = response.json()
     # renders templates from departments.html
     return render_template('departments.html', departments=departments, error='')
 
@@ -71,7 +72,7 @@ def add_department():
         # Makes request to rest api to add new department
         error_or_department: dict = requests.post(
             f'{flask.request.url_root}api/departments',
-            data=dict_department_name).json()  # serializes class to dictionary
+            json=dict_department_name).json()  # serializes class to dictionary
         if 'error' in error_or_department:
             error_text = error_or_department['error']
             if error_text is not None:
@@ -103,7 +104,7 @@ def edit_department(department_id: int):
         error_or_department: dict = requests.put(
             flask.request.url_root + f'api/departments/{department_id}',
             # serializes class to dictionary
-            data=dict_dep_to_edit).json()
+            json=dict_dep_to_edit).json()
         if 'error' in error_or_department:
             error_text: str = error_or_department['error']
             if error_text is not None:
