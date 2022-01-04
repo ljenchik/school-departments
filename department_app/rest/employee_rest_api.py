@@ -2,62 +2,49 @@
 Employee REST API contains classes: IsoDateFormat, Employee, DepartmentEmployee, SearchEmployee
 """
 # pylint: disable=cyclic-import
+# pylint: disable=no-self-use
 import http
-from datetime import datetime
 
-from flask_restful import Resource, fields, marshal_with, reqparse, abort
+from flask_apispec import marshal_with, use_kwargs, MethodResource
+from flask_restful import Resource, abort
+from marshmallow import Schema, fields
 
 from department_app.service.employee_service import create_employee_or_error, \
     get_employees_by_department_id, \
     delete_employee_by_id, get_employee_by_id, update_employee_or_error, \
     get_employee_by_dob, get_employee_by_period
 
-employee_parse_args: reqparse.RequestParser = reqparse.RequestParser()
-employee_parse_args.add_argument('name', type=str, required=True, help="Employee's name")
-employee_parse_args.add_argument('role', type=str, required=True, help="Employee's role")
-employee_parse_args.add_argument('date_of_birth', type=lambda x: datetime.strptime(x, '%Y-%m-%d'),
-                                 required=True, help="Employee's date of birth")
-employee_parse_args.add_argument('salary', type=float, required=True, help="Employee's salary")
-employee_parse_args.add_argument('department_id', type=int, required=True, help='Department id')
-employee_parse_args.add_argument('start_date', type=lambda x: datetime.strptime(x, '%Y-%m-%d'),
-                                 required=True, help='Start date')
 
-searchemployee_parse_args: reqparse.RequestParser = reqparse.RequestParser()
-searchemployee_parse_args.add_argument('date_of_birth',
-                                       type=lambda x: datetime.strptime(x, '%Y-%m-%d'))
-searchemployee_parse_args.add_argument('date_from', type=lambda x: datetime.strptime(x, '%Y-%m-%d'))
-searchemployee_parse_args.add_argument('date_to', type=lambda x: datetime.strptime(x, '%Y-%m-%d'))
+class EmployeeSchema(Schema):
+    """
+    Swagger specs for employee
+    """
+    id = fields.Integer(required=False)
+    name = fields.String(required=True, allow_none=False)
+    role = fields.String(required=True, allow_none=False)
+    date_of_birth = fields.DateTime(required=True, allow_none=False, format='%Y-%m-%d')
+    salary = fields.Float(required=True, allow_none=False)
+    department_id = fields.Integer(required=True, allow_none=False)
+    start_date = fields.DateTime(required=True, allow_none=False, format='%Y-%m-%d')
+    department_name = fields.String(required=False)
 
 
-class IsoDateFormat(fields.Raw):
+class SearchSchema(Schema):
+    """
+    Swagger specs for employee search request
+    """
+    date_of_birth = fields.DateTime(required=False, allow_none=False, format='%Y-%m-%d')
+    date_from = fields.DateTime(required=False, allow_none=False, format='%Y-%m-%d')
+    date_to = fields.DateTime(required=False, allow_none=False, format='%Y-%m-%d')
+
+
+class Employee(MethodResource, Resource):
     """
     Employee REST API class
     """
 
-    def format(self, value):
-        return value.strftime('%Y-%m-%d')
-
-
-employee_fields = {
-    'id': fields.Integer,
-    'name': fields.String,
-    'role': fields.String,
-    'date_of_birth': IsoDateFormat,
-    'salary': fields.Float,
-    'start_date': IsoDateFormat,
-    'department_id': fields.Integer,
-    'error': fields.String,
-}
-
-
-class Employee(Resource):
-    """
-    Employee REST API class
-    """
-
-    @classmethod
-    @marshal_with(employee_fields)
-    def get(cls, employee_id):
+    @marshal_with(EmployeeSchema)
+    def get(self, employee_id):
         """
         GET request to fetch employee by her/his id
         :return: employee
@@ -65,8 +52,7 @@ class Employee(Resource):
         employee_to_edit: dict = get_employee_by_id(employee_id)
         return employee_to_edit
 
-    @classmethod
-    def delete(cls, employee_id):
+    def delete(self, employee_id):
         """
         DELETE request
         Uses service to delete the employee by employee id
@@ -78,72 +64,68 @@ class Employee(Resource):
             return abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return {}
 
-    @classmethod
-    @marshal_with(employee_fields)
-    def put(cls, employee_id):
+    @use_kwargs(EmployeeSchema, location=('json'))
+    @marshal_with(EmployeeSchema)
+    def put(self, employee_id, **kwargs):
         """
         PUT request to update employee's data
         :return: a tuple of updated employee in JSON format, or a
         tuple of error message and status code 400 in case of validation error
         """
-        args: dict = employee_parse_args.parse_args()  # returns employee dict from flask request
-        error, employee = update_employee_or_error(employee_id, args)
+        employee: dict = kwargs
+        # employee_parse_args.parse_args()  # returns employee dict from flask request
+        error, employee = update_employee_or_error(employee_id, employee)
         if error is not None:
             abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return employee
 
 
-class DepartmentEmployee(Resource):
+class DepartmentEmployee(MethodResource, Resource):
     """
     DepartmentEmployee REST API class
     """
 
-    @classmethod
-    @marshal_with(employee_fields)  # serialization of the returned object to json()
-    def get(cls, department_id):
+    @marshal_with(EmployeeSchema(many=True))  # serialization of the returned object to json()
+    def get(self, department_id):
         """
         GET request handler of DepartmentEmployee API
         :return: employees working in the department with given department_id
         """
         return get_employees_by_department_id(department_id)
 
-    @classmethod
-    @marshal_with(employee_fields)  # serialization of the returned object to json
-    def post(cls, department_id):
+    @use_kwargs(EmployeeSchema, location=('json'))
+    @marshal_with(EmployeeSchema)  # serialization of the returned object to json
+    def post(self, department_id, **kwargs):
         """
         POST request to add new employee
         returns newly added employee in JSON format
         """
-        args: dict = employee_parse_args.parse_args()  # returns employee dict from flask request
-        args['department_id'] = department_id
-        (error, employee) = create_employee_or_error(args)
+        employee: dict = kwargs  # returns employee dict from HTTP request
+        employee['department_id'] = department_id
+        (error, employee) = create_employee_or_error(employee)
         if error is not None:
             abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return employee
 
 
-employee_dep_name_fields = employee_fields.copy()
-employee_dep_name_fields['department_name'] = fields.String
-
-
-class SearchEmployee(Resource):
+class SearchEmployee(MethodResource, Resource):
     """
     SearchEmployee API class
     """
 
-    @classmethod
-    @marshal_with(employee_dep_name_fields)  # serialization of the returned object to json()
-    def get(cls):
+    @use_kwargs(SearchSchema, location='query')
+    @marshal_with(EmployeeSchema(many=True))  # serialization of the returned object to json()
+    def get(self, **kwargs):
         """
         GET request to fetch emloyees with given date of birth or over a period
         between two given dates
         :return: employees with respective departments' names
         """
-        args: dict = searchemployee_parse_args.parse_args()
-        if args['date_of_birth'] is not None:
-            return get_employee_by_dob(args['date_of_birth'])
-        if args['date_from'] is not None and args['date_to'] is not None:
-            return get_employee_by_period(args['date_from'], args['date_to'])
+        search_args: dict = kwargs
+        if 'date_of_birth' in search_args:
+            return get_employee_by_dob(search_args['date_of_birth'])
+        if 'date_from' in search_args and 'date_to' in search_args:
+            return get_employee_by_period(search_args['date_from'], search_args['date_to'])
         abort(
             http.HTTPStatus.BAD_REQUEST,
             error='date_of_birth or date_from and date_to are required')

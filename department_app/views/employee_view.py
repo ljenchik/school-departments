@@ -103,7 +103,7 @@ def add_employee_post(department_id: str):
     new_employee['department_id'] = int(department_id)
     response = requests.post(
         flask.request.url_root + f'/api/department/{department_id}/employee',
-        data=new_employee
+        json=new_employee
     )
     error_text = handle_rest_response(response)
     if error_text is None:
@@ -161,7 +161,7 @@ def edit_employee_put(employee_id):
     employee_to_edit['id'] = employee_id
     department_id = employee_to_edit['department_id']
     response = requests.put(flask.request.url_root +
-                            f'/api/employee/{employee_id}', data=employee_to_edit)
+                            f'/api/employee/{employee_id}', json=employee_to_edit)
 
     error_text = handle_rest_response(response)
     if error_text is None:

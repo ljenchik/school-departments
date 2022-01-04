@@ -31,3 +31,6 @@ docs = FlaskApiSpec(app)
 
 docs.register(DepartmentWithSalary)
 docs.register(Department)
+docs.register(Employee)
+docs.register(DepartmentEmployee)
+docs.register(SearchEmployee)

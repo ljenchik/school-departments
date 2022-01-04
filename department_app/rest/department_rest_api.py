@@ -28,18 +28,19 @@ class DepartmentSchema(Schema):
     """
     id = fields.Integer()
     name = fields.String()
+    error = fields.String(required=False)
 
 
 class DepartmentNameSchema(Schema):
     """
     Swagger specs of incoming parameter for department name
     """
-    name = fields.String()
+    name = fields.String(required=True, allow_none=False, error_messages={'required': 'asdfa'})
 
 
 class DepartmentWithSalary(MethodResource, Resource):
     """
-    Department REST API class
+    Department REST API Resource class
     """
 
     @doc(description='Gets list of all departments with average employee salary')
@@ -54,13 +55,13 @@ class DepartmentWithSalary(MethodResource, Resource):
     @doc(description='Creates new department')
     @use_kwargs(DepartmentNameSchema, location=('json'))
     @marshal_with(DepartmentSchema)  # serialization of the returned object
-    def post(self, name):
+    def post(self, **kwargs):
         """
         POST request
         Deserializes request data, uses service to add department to
         database and returns newly added department in JSON format
         """
-        error, new_department = create_department_or_error(name)
+        error, new_department = create_department_or_error(kwargs['name'])
         if error is not None:
             abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return new_department
@@ -68,7 +69,7 @@ class DepartmentWithSalary(MethodResource, Resource):
 
 class Department(MethodResource, Resource):
     """
-    Department REST API class
+    Department REST API Resource class
     """
 
     @doc(description='Gets department by id')
