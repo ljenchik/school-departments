@@ -16,7 +16,6 @@ def employee_to_json(employee: Employee) -> dict:
                            for c in employee.__table__.columns if
                            c.name != "date_created"
                            }
-    employee_dict['error'] = None
     employee_dict['start_date'] = datetime.strftime(employee.start_date, '%Y-%m-%d')
     employee_dict['date_of_birth'] = datetime.strftime(employee.date_of_birth, '%Y-%m-%d')
     return employee_dict
@@ -73,7 +72,7 @@ class TestEmployeetApi(TestCase):
                 'name': 'req name', 'role': 'req role', 'date_of_birth': '1981-12-12',
                 'salary': 23456.0, 'start_date': '2018-09-03', 'department_id': 2
             }
-            response = self.client.put('/api/employee/2', data=updated_employee)
+            response = self.client.put('/api/employee/2', json=updated_employee)
 
             # rest api converts string dates into python datetime objects
             updated_employee['date_of_birth'] = datetime(1981, 12, 12, 0, 0)
@@ -104,7 +103,7 @@ class TestEmployeetApi(TestCase):
             # rest api request
             added_employee = {'name': 'Alex Brown', 'role': 'Teacher', 'date_of_birth': '1992-2-15',
                               'salary': 27453.0, 'start_date': '2015-09-03', 'department_id': 2}
-            response = self.client.post('/api/department/2/employee', data=added_employee)
+            response = self.client.post('/api/department/2/employee', json=added_employee)
 
             employee_sent_to_service = added_employee.copy()
             employee_sent_to_service['date_of_birth'] = datetime(1992, 2, 15)
@@ -122,7 +121,7 @@ class TestEmployeetApi(TestCase):
             # rest api request
             added_employee = {'name': 'Alex Brown', 'role': 'Teacher', 'date_of_birth': '1992-2-15',
                               'salary': 27453.0, 'start_date': '2015-09-03', 'department_id': 2}
-            response = self.client.post('/api/department/2/employee', data=added_employee)
+            response = self.client.post('/api/department/2/employee', json=added_employee)
 
             added_employee['date_of_birth'] = datetime(1992, 2, 15)
             added_employee['start_date'] = datetime(2015, 9, 3)
@@ -186,7 +185,4 @@ class TestEmployeetApi(TestCase):
 
             get_employee_by_period.assert_not_called()
 
-            self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
-            self.assertEqual(
-                {'message': {'date_from': "time data '1974-23-12' does not match format "
-                                          "'%Y-%m-%d'"}}, response.json)
+            self.assertEqual(http.HTTPStatus.UNPROCESSABLE_ENTITY, response.status_code)

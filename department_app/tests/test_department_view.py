@@ -58,7 +58,7 @@ class TestDepartmentView(TestCase):
                 '/department/edit/123', data={'department_name': 'asdf asdfas'})
             self.assertEqual(http.HTTPStatus.FOUND, response.status_code)
             requests_mock.assert_called_once_with(
-                'http://localhost/api/departments/123', data={'name': 'asdf asdfas'})
+                'http://localhost/api/departments/123', json={'name': 'asdf asdfas'})
 
     def test_edit_department_with_error(self):
         # Setup
@@ -75,7 +75,7 @@ class TestDepartmentView(TestCase):
             self.assertEqual(http.HTTPStatus.OK, response.status_code)
             self.assertIn('error_text', str(response.data))
             requests_mock.assert_called_once_with(
-                'http://localhost/api/departments/123', data={'name': 'asdf asdfas'})
+                'http://localhost/api/departments/123', json={'name': 'asdf asdfas'})
 
     def test_add_department_success(self):
         response = self.client.get('/department/add')
@@ -95,7 +95,7 @@ class TestDepartmentView(TestCase):
             self.assertEqual(http.HTTPStatus.OK, response.status_code)
             self.assertIn('error_text', str(response.data))
             requests_mock.assert_called_once_with(
-                'http://localhost/api/departments', data={'name': 'asdf asdfas'})
+                'http://localhost/api/departments', json={'name': 'asdf asdfas'})
 
     def test_add_department_redirect(self):
         # Setup
@@ -109,7 +109,7 @@ class TestDepartmentView(TestCase):
             # Asserts
             self.assertEqual(http.HTTPStatus.FOUND, response.status_code)
             requests_mock.assert_called_once_with(
-                'http://localhost/api/departments', data={'name': 'asdf asdfas'})
+                'http://localhost/api/departments', json={'name': 'asdf asdfas'})
 
     def test_delete_department(self):
         # Setup

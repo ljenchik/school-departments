@@ -43,12 +43,12 @@ class TestDepartmentApi(TestCase):
                 'department_app.rest.department_rest_api.create_department_or_error',
                 return_value=(None, department_1)
         ) as create_department_or_error:
-            response = self.client.post('/api/departments', data={'name': 'Requested name'})
+            response = self.client.post('/api/departments', json={'name': 'Requested name'})
 
             create_department_or_error.assert_called_once_with('Requested name')
             self.assertEqual(http.HTTPStatus.OK, response.status_code)
             self.assertEqual(
-                {'error': None, 'id': department_1.id, 'name': department_1.name},
+                {'id': department_1.id, 'name': department_1.name},
                 response.json)
 
     def test_add_department_fail_already_exists(self):
@@ -56,7 +56,7 @@ class TestDepartmentApi(TestCase):
                 'department_app.rest.department_rest_api.create_department_or_error',
                 return_value=('Department with this name already exist', None)
         ) as create_department_or_error:
-            response = self.client.post('/api/departments', data={'name': 'Requested name'})
+            response = self.client.post('/api/departments', json={'name': 'Requested name'})
 
             create_department_or_error.assert_called_once_with('Requested name')
             self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
@@ -66,10 +66,7 @@ class TestDepartmentApi(TestCase):
 
     def test_add_department_fail_empty_name(self):
         response = self.client.post('/api/departments')
-        self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)
-        self.assertEqual(
-            {'message': {'name': 'Name of department is required'}},
-            response.json)
+        self.assertEqual(http.HTTPStatus.UNPROCESSABLE_ENTITY, response.status_code)
 
     def test_get_departments_by_id(self):
         mock_return_value = department_1
@@ -81,25 +78,25 @@ class TestDepartmentApi(TestCase):
 
             get_department_by_id_mock.assert_called_once_with(3)
             self.assertEqual(http.HTTPStatus.OK, response.status_code)
-            self.assertEqual({'error': None, 'id': 3, 'name': 'Dep of Maths Test'}, response.json)
+            self.assertEqual({'id': 3, 'name': 'Dep of Maths Test'}, response.json)
 
     def test_update_department_success(self):
         with patch(
                 'department_app.rest.department_rest_api.update_department',
                 return_value=(None, department_1)
         ) as update_department:
-            response = self.client.put('/api/departments/3', data={'name': 'Requested name'})
+            response = self.client.put('/api/departments/3', json={'name': 'Requested name'})
 
             update_department.assert_called_once_with(3, 'Requested name')
             self.assertEqual(http.HTTPStatus.OK, response.status_code)
-            self.assertEqual({'error': None, 'id': 3, 'name': 'Dep of Maths Test'}, response.json)
+            self.assertEqual({'id': 3, 'name': 'Dep of Maths Test'}, response.json)
 
     def test_update_department_fail(self):
         with patch(
                 'department_app.rest.department_rest_api.update_department',
                 return_value=('Department with this name already exist', None)
         ) as update_department:
-            response = self.client.put('/api/departments/3', data={'name': 'Requested name'})
+            response = self.client.put('/api/departments/3', json={'name': 'Requested name'})
 
             update_department.assert_called_once_with(3, 'Requested name')
             self.assertEqual(http.HTTPStatus.BAD_REQUEST, response.status_code)

@@ -36,6 +36,12 @@ MYSQL_SERVER=<your_mysql_server>
 MYSQL_DATABASE=<your_mysql_database_name>
 ```
 
+- ### Run migrations to create database tables:
+
+```
+flask db upgrade
+```
+
 - ### Run web app
 
 ```
@@ -62,6 +68,12 @@ localhost:5000/api/department/<int:department_id>/employee
 localhost:5000/api/employee/search
 localhost:5000/api/employee/search?date_of_birth=<YYYY-MM-DD>
 localhost:5000/api/employee/search?date_from=<YYYY-MM-DD>&date_to=<YYYY-MM-DD>
+```
+
+#### Web Service endpoints are documented with SwaggerUI at:
+
+```
+localhost:5000/swagger
 ```
 
 - ### Web Application:
