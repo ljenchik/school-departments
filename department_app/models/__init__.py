@@ -1,6 +1,5 @@
 """
 This package contains department and employee models:
-Modules:
 - `department.py`: represents departments
 - `department_avg_salary.py`: represents departments with average salaries
 - `employee.py`: defines employees model

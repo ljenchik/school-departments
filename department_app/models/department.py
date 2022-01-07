@@ -1,5 +1,5 @@
 """
-Department model represents departments with class: Department
+Department model represents departments with class Department
 """
 
 from datetime import datetime
