@@ -43,4 +43,4 @@ class Employee(db.Model):
         Returns string representation of employee
         :return: string representation of employee
         """
-        return f'<Employee {self.id!r}>'
+        return f'Employee {self.id}'

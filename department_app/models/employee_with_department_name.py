@@ -1,7 +1,7 @@
 
 """
-Employee with department name model represents employees with department name
-they belong to with class EmployeeDepName
+Employee with department name model represents employee with department name
+he/she belongs to
 """
 from datetime import datetime
 
@@ -43,4 +43,4 @@ class EmployeeDepName(db.Model):
     __tablename__ = 'Employee_with_department_name_ignore'
 
     def __repr__(self):
-        return f'<Employee_with_department_name {id}>'
+        return f'Employee_with_department_name {self.id}'

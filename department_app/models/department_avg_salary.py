@@ -1,5 +1,5 @@
 """
-Department model represents departments with average salaries with class DepartmentAvgSalary
+Department with average salaries model is represented by class DepartmentAvgSalary
 """
 
 from datetime import datetime
@@ -24,4 +24,4 @@ class DepartmentAvgSalary(db.Model):
     __tablename__ = 'Department_Avg_Salary_ignore'
 
     def __repr__(self):
-        return f'<Department_avg_salary {self.id}'
+        return f'Department_avg_salary {self.id}'
