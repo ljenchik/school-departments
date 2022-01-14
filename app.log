@@ -1,0 +1,5 @@
+2022-01-14 23:10:17,225 WARNING werkzeug:  * Debugger is active!
+2022-01-14 23:10:17,232 INFO werkzeug:  * Debugger PIN: 112-566-114
+2022-01-14 23:10:17,676 INFO werkzeug: 127.0.0.1 - - [14/Jan/2022 23:10:17] "GET /api/departments HTTP/1.1" 200 -
+2022-01-14 23:10:17,698 INFO werkzeug: 127.0.0.1 - - [14/Jan/2022 23:10:17] "GET / HTTP/1.1" 200 -
+2022-01-14 23:10:19,463 INFO werkzeug: 127.0.0.1 - - [14/Jan/2022 23:10:19] "GET /department/add HTTP/1.1" 200 -
