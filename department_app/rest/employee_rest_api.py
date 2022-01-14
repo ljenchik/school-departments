@@ -1,5 +1,6 @@
 """
-Employee REST API contains classes: IsoDateFormat, Employee, DepartmentEmployee, SearchEmployee
+Employee REST API contains classes:
+EmployeeSchema, SearchSchema, Employee, DepartmentEmployee, SearchEmployee
 """
 # pylint: disable=cyclic-import
 # pylint: disable=no-self-use
@@ -46,17 +47,19 @@ class Employee(MethodResource, Resource):
     @marshal_with(EmployeeSchema)
     def get(self, employee_id):
         """
-        GET request to fetch employee by her/his id
+        GET request to fetch employee by given id
         :return: employee
         """
-        employee_to_edit: dict = get_employee_by_id(employee_id)
-        return employee_to_edit
+        emp: dict = get_employee_by_id(employee_id)
+        if emp is None:
+            abort(http.HTTPStatus.NOT_FOUND)
+        return emp
 
     def delete(self, employee_id):
         """
         DELETE request
-        Uses service to delete the employee by employee id
-        :return: empty dictionary or a tuple of an error message and a status code 400
+        Uses service to delete the employee by given id
+        :return: empty dictionary, or a tuple with an error message and a status code 400
         in case of employee is not found
         """
         error: str = delete_employee_by_id(employee_id)
@@ -64,16 +67,16 @@ class Employee(MethodResource, Resource):
             return abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return {}
 
+    # Injects keyword arguments from the request as json
     @use_kwargs(EmployeeSchema, location=('json'))
     @marshal_with(EmployeeSchema)
     def put(self, employee_id, **kwargs):
         """
         PUT request to update employee's data
         :return: a tuple of updated employee in JSON format, or a
-        tuple of error message and status code 400 in case of validation error
+        tuple with error message and status code 400 in case of validation error
         """
         employee: dict = kwargs
-        # employee_parse_args.parse_args()  # returns employee dict from flask request
         error, employee = update_employee_or_error(employee_id, employee)
         if error is not None:
             abort(http.HTTPStatus.BAD_REQUEST, error=error)
@@ -85,16 +88,18 @@ class DepartmentEmployee(MethodResource, Resource):
     DepartmentEmployee REST API class
     """
 
-    @marshal_with(EmployeeSchema(many=True))  # serialization of the returned object to json()
+    # serialization of the returned object to json()
+    @marshal_with(EmployeeSchema(many=True))
     def get(self, department_id):
         """
-        GET request handler of DepartmentEmployee API
-        :return: employees working in the department with given department_id
+        GET request to fetch employees of the department with given id
+        :return: list of employees working in the department with given department_id
         """
         return get_employees_by_department_id(department_id)
 
+    # Injects keyword arguments from the request as json
     @use_kwargs(EmployeeSchema, location=('json'))
-    @marshal_with(EmployeeSchema)  # serialization of the returned object to json
+    @marshal_with(EmployeeSchema)
     def post(self, department_id, **kwargs):
         """
         POST request to add new employee
@@ -114,12 +119,12 @@ class SearchEmployee(MethodResource, Resource):
     """
 
     @use_kwargs(SearchSchema, location='query')
-    @marshal_with(EmployeeSchema(many=True))  # serialization of the returned object to json()
+    @marshal_with(EmployeeSchema(many=True))
     def get(self, **kwargs):
         """
         GET request to fetch emloyees with given date of birth or over a period
         between two given dates
-        :return: employees with respective departments' names
+        :return: list of employees with respective departments' names
         """
         search_args: dict = kwargs
         if 'date_of_birth' in search_args:

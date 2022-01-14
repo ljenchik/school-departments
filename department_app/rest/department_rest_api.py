@@ -15,7 +15,7 @@ from department_app.service.department_service import read_departments_with_sala
 
 class DepartmentWithSalarySchema(Schema):
     """
-    Swagger specs of department with salaries
+    Swagger specs of department with salaries class
     """
     id = fields.Integer()
     name = fields.String()
@@ -24,7 +24,7 @@ class DepartmentWithSalarySchema(Schema):
 
 class DepartmentSchema(Schema):
     """
-    Swagger specs of departments
+    Swagger specs of department class
     """
     id = fields.Integer()
     name = fields.String()
@@ -35,7 +35,7 @@ class DepartmentNameSchema(Schema):
     """
     Swagger specs of incoming parameter for department name
     """
-    name = fields.String(required=True, allow_none=False, error_messages={'required': 'asdfa'})
+    name = fields.String(required=True, allow_none=False, error_messages={'required': 'error'})
 
 
 class DepartmentWithSalary(MethodResource, Resource):
@@ -43,18 +43,20 @@ class DepartmentWithSalary(MethodResource, Resource):
     Department REST API Resource class
     """
 
+    # decorator for swagger description
     @doc(description='Gets list of all departments with average employee salary')
-    @marshal_with(DepartmentWithSalarySchema(many=True))
+    @marshal_with(DepartmentWithSalarySchema(many=True))  # decorator to serialize returned object
     def get(self):
         """
         GET request to fetch all departments with average salaries
-        :return: all departments with average salaries in JSON format
+        :return: list of all departments with average salaries in JSON format
         """
         return read_departments_with_salaries()
 
     @doc(description='Creates new department')
+    # Injects keyword arguments from the request as json
     @use_kwargs(DepartmentNameSchema, location=('json'))
-    @marshal_with(DepartmentSchema)  # serialization of the returned object
+    @marshal_with(DepartmentSchema)
     def post(self, **kwargs):
         """
         POST request
@@ -77,12 +79,13 @@ class Department(MethodResource, Resource):
     def get(self, department_id):
         """
         GET request to fetch all departments via service
-        :return: all departments in JSON format
+        :return: list of all departments in JSON format
         """
-        return get_department_by_id(department_id)
+        dep = get_department_by_id(department_id)
+        if dep is None:
+            abort(http.HTTPStatus.NOT_FOUND)
+        return dep
 
-    # serialization of the returned object from this method
-    # (returns department with 3 fields in the form of dictionary)
     @doc(description='Updates department by id')
     @use_kwargs(DepartmentNameSchema, location=('json'))
     @marshal_with(DepartmentSchema)
@@ -93,9 +96,7 @@ class Department(MethodResource, Resource):
         :return: a tuple of updated department in JSON format and status code 202, or a
         tuple of error messages and status code 400 in case of validation error
         """
-        # from the request body
         error, department = update_department(department_id, name)
-        # tries to save to db and returns error (empty name or duplicate) if unsuccessful
         if error is not None:  # if there is an error the function returns dictionary with error
             abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return department, http.HTTPStatus.OK

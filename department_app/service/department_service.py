@@ -43,7 +43,7 @@ def create_department_or_error(name: str) -> (str, Department):
         error = str(error)  # exception string from Python
         if 'Duplicate' in error:  # checks if department with the same name exists (unique in db)
             error = 'Department with this name already exists'
-        return error, None  # returns tuple (error, department)
+        return error, None
 
 
 def get_department_by_id(department_id: int) -> Department:

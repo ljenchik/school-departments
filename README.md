@@ -18,7 +18,7 @@
 
 ```
 virtualenv venv
-source env/bin/activate
+source venv/bin/activate
 ```
 
 - ### Install the requirements:
@@ -30,10 +30,10 @@ pip install -r requirements.txt
 - ### Set the following environment variables:
 
 ```
-MYSQL_USER=<your_mysql_user>
-MYSQL_PASSWORD=<your_mysql_user_password>
-MYSQL_SERVER=<your_mysql_server>
-MYSQL_DATABASE=<your_mysql_database_name>
+export MYSQL_USER=<your_mysql_user>
+export MYSQL_PASSWORD=<your_mysql_user_password>
+export MYSQL_SERVER=<your_mysql_server>
+export MYSQL_DATABASE=<your_mysql_database_name>
 ```
 
 - ### Run migrations to create database tables:
