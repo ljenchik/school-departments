@@ -34,16 +34,20 @@ def create_department_or_error(name: str) -> (str, Department):
     :return: tuple (error, new department)
     """
     new_department = Department(name=name)
-    try:
-        db.session.add(new_department)
-        db.session.commit()  # saves to db
-        return None, new_department
-    except SQLAlchemyError as error:
-        db.session.rollback()
-        error = str(error)  # exception string from Python
-        if 'Duplicate' in error:  # checks if department with the same name exists (unique in db)
-            error = 'Department with this name already exists'
-        return error, None  # returns tuple (error, department)
+    if new_department.name.strip() == '':
+        error = 'Empty name'
+    else:
+        try:
+            db.session.add(new_department)
+            db.session.commit()  # saves to db
+            return None, new_department
+        except SQLAlchemyError as error:
+            db.session.rollback()
+            error = str(error)  # exception string from Python
+            # checks if department with the same name exists (unique in db)
+            if 'Duplicate' in error:
+                error = 'Department with this name already exists'
+    return error, None  # returns tuple (error, department)
 
 
 def get_department_by_id(department_id: int) -> Department:

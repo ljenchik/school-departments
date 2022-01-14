@@ -64,7 +64,7 @@ class TestDepartmentApi(TestCase):
                 {'error': 'Department with this name already exist'},
                 response.json)
 
-    def test_add_department_fail_empty_name(self):
+    def test_add_department_fail_empty(self):
         response = self.client.post('/api/departments')
         self.assertEqual(http.HTTPStatus.UNPROCESSABLE_ENTITY, response.status_code)
 

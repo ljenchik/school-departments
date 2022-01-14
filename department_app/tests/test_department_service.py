@@ -44,6 +44,15 @@ class TestDepartmentService(TestCase):
             db_session_mock.commit.assert_called_once()
             self.assertEqual(None, error)
 
+    def test_create_department_or_error_empty_name(self):
+        with patch(
+                'department_app.service.department_service.db.session'
+        ) as db_session_mock:
+            error, return_value = create_department_or_error('')
+            db_session_mock.commit.assert_not_called()
+            self.assertEqual('Empty name', error)
+            self.assertEqual(None, return_value)
+
     def test_create_department_or_error_fail_duplicate(self):
         with patch(
                 'department_app.service.department_service.db.session',
