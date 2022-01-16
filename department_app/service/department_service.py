@@ -18,11 +18,10 @@ def read_departments_with_salaries() -> list:
         db.text("""select d.*, avg_salary
                             from department d 
                             left join (
-                                select d.id, round(avg(e.salary), 2) avg_salary
-                                from department d 
-                                join employee e on d.id  = e.department_id 
-                                GROUP by d.id
-                            ) avg_sal on avg_sal.id = d.id
+                                select department_id, round(avg(salary), 2) avg_salary
+                                from employee
+                                GROUP by department_id
+                            ) avg_sal on avg_sal.department_id = d.id
                             """)
     ).all()
     return departments
@@ -52,7 +51,7 @@ def create_department_or_error(name: str) -> (str, Department):
 
 def get_department_by_id(department_id: int) -> Department:
     """
-    gets department by its id
+    gets department by its id from db
     :param department_id:
     :return: department
     """

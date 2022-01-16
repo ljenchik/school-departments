@@ -17,7 +17,7 @@ from department_app import app
 def get_url(url: str):
     """
     creates rest api url
-    :param url:
+    :param url
     :return: absolute rest api url
     """
     return flask.request.url_root + url
@@ -30,15 +30,16 @@ def index_employee(department_id: str):
     :param department_id
     :return: rendered template
     """
-    dep: dict = get_department_by_id(department_id)
     # get employees by department id
+    dep: dict = get_department_by_id(department_id)
+    # allows a server to identify a page where user is visiting it from
     referer = request.referrer
     if referer is None or 'search-employee' not in referer:
         referer = None
 
     employees: list = requests.get(get_url(f'/api/department/{department_id}/employee')).json()
     return render_template('employees.html', employees=employees, department=dep, error='',
-                           reffer=referer)
+                           referer=referer)
 
 
 @app.route('/department/<int:department_id>/employees', methods=['POST'])

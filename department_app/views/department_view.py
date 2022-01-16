@@ -54,6 +54,7 @@ def delete_department():
         f'{flask.request.url_root}api/departments/{department_id}').json()
     if len(error_dict) != 0:
         error_text: str = error_dict['error']
+        # json() deserializes to Python object
     departments = requests.get(f'{flask.request.url_root}api/departments').json()
     return render_template('departments.html', departments=departments, error=error_text)
 
@@ -64,25 +65,27 @@ def add_department():
     """
     :return: returns rendered 'departments.html' template for url route '/department/add'
     """
-    if request.method == 'POST':
-        # requests form from template department.html and enter a new department name
-        department_name: str = request.form['department_name']
-        dict_department_name: dict = {'name': department_name}
-        # Makes request to rest api to add new department
-        error_or_department: dict = requests.post(
-            f'{flask.request.url_root}api/departments',
-            json=dict_department_name).json()  # serializes class to dictionary
-        if 'error' in error_or_department:
-            error_text = error_or_department['error']
-            if error_text is not None:
-                dep = {'name': department_name, 'id': None}
-                return render_template('department.html', dep=dep,
-                                       error=error_text)
-        return redirect('/')
-    # When user clicks on add department button,
-    # an empty form from department.html template is displayed
-    new_department = {"name": '', 'id': None}
-    return render_template('department.html', dep=new_department, error='')
+    if request.method == "GET":
+        # When user clicks on add department button,
+        # an empty form from department.html template is displayed
+        new_department = {"name": '', 'id': None}
+        return render_template('department.html', dep=new_department, error='')
+
+    # request.method == "POST"
+    # requests form from template department.html and enter a new department name
+    department_name: str = request.form['department_name']
+    dict_department_name: dict = {'name': department_name}
+    # Makes request to rest api to add new department
+    error_or_department: dict = requests.post(
+        f'{flask.request.url_root}api/departments',
+        json=dict_department_name).json()  # serializes class to dictionary
+    if 'error' in error_or_department:
+        error_text = error_or_department['error']
+        if error_text is not None:
+            dep = {'name': department_name, 'id': None}
+            return render_template('department.html', dep=dep,
+                                   error=error_text)
+    return redirect('/')
 
 
 @app.route('/department/edit/<int:department_id>', methods=['GET', 'POST'])
@@ -100,7 +103,6 @@ def edit_department(department_id: int):
         # Makes request to rest api to upload a new department name
         error_or_department: dict = requests.put(
             flask.request.url_root + f'api/departments/{department_id}',
-            # serializes class to dictionary
             json=dict_dep_to_edit).json()
         if 'error' in error_or_department:
             error_text: str = error_or_department['error']

@@ -6,7 +6,7 @@ EmployeeSchema, SearchSchema, Employee, DepartmentEmployee, SearchEmployee
 # pylint: disable=no-self-use
 import http
 
-from flask_apispec import marshal_with, use_kwargs, MethodResource
+from flask_apispec import marshal_with, use_kwargs, MethodResource, doc
 from flask_restful import Resource, abort
 from marshmallow import Schema, fields
 
@@ -44,6 +44,8 @@ class Employee(MethodResource, Resource):
     Employee REST API class
     """
 
+    # decorator for swagger description
+    @doc(description='Gets employee by id')
     @marshal_with(EmployeeSchema)
     def get(self, employee_id):
         """
@@ -55,6 +57,7 @@ class Employee(MethodResource, Resource):
             abort(http.HTTPStatus.NOT_FOUND)
         return emp
 
+    @doc(description='Deletes employee by id')
     def delete(self, employee_id):
         """
         DELETE request
@@ -67,6 +70,7 @@ class Employee(MethodResource, Resource):
             return abort(http.HTTPStatus.BAD_REQUEST, error=error)
         return {}
 
+    @doc(description='Updates employee')
     # Injects keyword arguments from the request as json
     @use_kwargs(EmployeeSchema, location=('json'))
     @marshal_with(EmployeeSchema)
@@ -88,6 +92,7 @@ class DepartmentEmployee(MethodResource, Resource):
     DepartmentEmployee REST API class
     """
 
+    @doc(description='Gets employees by department id')
     # serialization of the returned object to json()
     @marshal_with(EmployeeSchema(many=True))
     def get(self, department_id):
@@ -97,8 +102,9 @@ class DepartmentEmployee(MethodResource, Resource):
         """
         return get_employees_by_department_id(department_id)
 
+    @doc(description='Creates a new employee')
     # Injects keyword arguments from the request as json
-    @use_kwargs(EmployeeSchema, location=('json'))
+    @use_kwargs(EmployeeSchema, location='json')
     @marshal_with(EmployeeSchema)
     def post(self, department_id, **kwargs):
         """
@@ -115,14 +121,16 @@ class DepartmentEmployee(MethodResource, Resource):
 
 class SearchEmployee(MethodResource, Resource):
     """
-    SearchEmployee API class
+    SearchEmployee API class'
     """
 
+    @doc(description='Searches employee date of birth')
+    # 'query' because parameters are from url query
     @use_kwargs(SearchSchema, location='query')
     @marshal_with(EmployeeSchema(many=True))
     def get(self, **kwargs):
         """
-        GET request to fetch emloyees with given date of birth or over a period
+        GET request to fetch employees with given date of birth or over a period
         between two given dates
         :return: list of employees with respective departments' names
         """

@@ -45,7 +45,8 @@ class DepartmentWithSalary(MethodResource, Resource):
 
     # decorator for swagger description
     @doc(description='Gets list of all departments with average employee salary')
-    @marshal_with(DepartmentWithSalarySchema(many=True))  # decorator to serialize returned object
+    # return value of the decorated view function using the specified schema
+    @marshal_with(DepartmentWithSalarySchema(many=True))
     def get(self):
         """
         GET request to fetch all departments with average salaries
@@ -54,8 +55,9 @@ class DepartmentWithSalary(MethodResource, Resource):
         return read_departments_with_salaries()
 
     @doc(description='Creates new department')
-    # Injects keyword arguments from the request as json
+    # Injects keyword arguments
     @use_kwargs(DepartmentNameSchema, location=('json'))
+    # return value of the decorated view function using the specified schema
     @marshal_with(DepartmentSchema)
     def post(self, **kwargs):
         """
@@ -75,11 +77,12 @@ class Department(MethodResource, Resource):
     """
 
     @doc(description='Gets department by id')
+    # return value of the decorated view function using the specified schema
     @marshal_with(DepartmentSchema)
     def get(self, department_id):
         """
-        GET request to fetch all departments via service
-        :return: list of all departments in JSON format
+        GET request to get department with a given id via service
+        :return: department in JSON format
         """
         dep = get_department_by_id(department_id)
         if dep is None:
