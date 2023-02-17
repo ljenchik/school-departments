@@ -33,7 +33,7 @@ marshmallow==3.14.1
 mccabe==0.6.1
 mysql-connector-python==8.0.27
 platformdirs==2.4.0
-protobuf==3.19.1
+protobuf==3.19.5
 pylint==2.12.1
 pylint-flask==0.6
 pylint-flask-sqlalchemy==0.2.0
