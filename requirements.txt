@@ -3,7 +3,7 @@ aniso8601==9.0.1
 antiorm==1.2.1
 apispec==5.1.1
 astroid==2.9.0
-certifi==2021.10.8
+certifi==2022.12.7
 charset-normalizer==2.0.8
 click==8.0.3
 coverage==6.2
